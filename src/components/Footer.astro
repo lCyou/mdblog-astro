@@ -1,8 +1,31 @@
 ---
-const platform = "github";
-const username = "withastro";
+import { Icon } from 'astro-icon/components';
+
 ---
 
 <footer>
-  <p>私のプロジェクトについて詳しくは<a href={`https://www.${platform}.com/${username}`}>{platform}</a>をご確認ください！</p>
+  <Icon name="mdi:github" class="icon" />
+  <Icon name="mdi:twitter" class="icon" />
 </footer>
+
+<style>
+  footer {
+    padding: 2rem 0;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    border-top: 1px solid var(--color-border);
+    margin-top: 2rem;
+  }
+
+  .icon {
+    color: var(--color-text);
+    width: 2em;
+    height: 2em;
+    transition: color 0.2s ease;
+  }
+
+  .icon:hover {
+    color: var(--color-accent);
+  }
+</style>

@@ -1,39 +1,66 @@
 ---
-import BaseLayout from './BaseLayout.astro';
-const { frontmatter } = Astro.props;
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { Icon } from 'astro-icon/components';
 
+const { frontmatter } = Astro.props;
 const { minutesRead } = Astro.props.frontmatter;
 ---
 <BaseLayout>
+  <div class="post-header">
     <h1>{frontmatter.title}</h1>
-    <p>{frontmatter.pubDate.toString().slice(0,10)}</p>
-    <p>著者: {frontmatter.author}</p>
-    <p>time: {minutesRead} </p>
+    <div>
+      <p style="display: flex; justify-content: center;">
+        {frontmatter.pubDate.toString().slice(0,10)}
+      </p>
+      <Icon name="mdi:language-markdown-outline" class="icon" />
+      , Author: {frontmatter.author}
+      , {minutesRead}
+    </div>
     <div class="tags">
-    {frontmatter.tags.map((tag: string) => (
-      <p class="tag"><a href={`/tags/${tag}`}>{tag}</a></p>
-    ))}
+      <Icon name="mdi:tag-multiple-outline" class="icon" />
+      {frontmatter.tags.map((tag: string) => (
+        <p class="tag"><a href={`/tags/${tag}`}>{tag}</a></p>
+      ))}
+    </div>
   </div>
-
-
-    <slot />
+  <slot />
 </BaseLayout>
 <style>
-  a {
-    color: #00539F;
+  .post-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .tags {
     display: flex;
     flex-wrap: wrap;
+    gap: 0.5em;
+    align-items: center;
   }
 
   .tag {
-    margin: 0.25em;
-    border: dotted 1px #a1a1a1;
-    border-radius: .5em;
-    padding: .5em 1em;
-    font-size: 1.15em;
-    background-color: #F8FCFD;
+    margin: 0;
+    font-size: 0.75em;
+    border: 2px solid var(--color-border);
+    border-radius: 0.5em;
+    padding: 0.5em;
+    background-color: var(--color-card-bg);
+    transition: all 0.2s ease;
+  }
+
+  .tag:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  .tag a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .tag:hover a {
+    color: var(--color-accent);
   }
 </style>

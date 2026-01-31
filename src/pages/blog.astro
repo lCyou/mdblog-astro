@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
 const allPosts = Object.values(import.meta.glob('./posts/**/*.md', { eager: true }));
 const pageTitle = "私のAstro学習ブログ";
 ---

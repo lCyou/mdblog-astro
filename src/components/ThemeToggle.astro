@@ -1,0 +1,66 @@
+---
+import { Icon } from 'astro-icon/components'
+---
+
+<button id="theme-toggle" aria-label="テーマ切り替え">
+  <Icon name="system-uicons:sun" class="icon" />
+</button>
+
+<style>
+  #theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background-color: var(--color-card-bg);
+    border: 2px solid var(--color-border);
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+
+  #theme-toggle:hover {
+    border-color: var(--color-accent);
+    transform: scale(1.1);
+  }
+
+  .theme-icon {
+    font-size: 1.5rem;
+    position: absolute;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+</style>
+
+<script>
+  const themeToggle = document.getElementById('theme-toggle');
+  
+  // ローカルストレージまたはシステム設定から初期テーマを取得
+  function getInitialTheme() {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+      return storedTheme;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  // テーマを設定
+  function setTheme(theme: string) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }
+
+  // 初期テーマを適用
+  setTheme(getInitialTheme());
+
+  // ボタンクリックでテーマ切り替え
+  themeToggle?.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+  });
+</script>

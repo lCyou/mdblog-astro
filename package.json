@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.15",
+    "@iconify-json/devicon": "^1.2.57",
+    "@iconify-json/mdi": "^1.2.3",
+    "@iconify-json/system-uicons": "^1.2.4",
     "astro": "^5.17.1",
+    "astro-icon": "^1.1.5",
     "mdast-util-to-string": "^4.0.0",
     "reading-time": "^1.5.0"
   }
