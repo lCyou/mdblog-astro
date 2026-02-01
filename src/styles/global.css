@@ -4,8 +4,8 @@
   --color-bg: #fdf6e3; /* base3 - クリームイエロー */
   --color-text: #657b83; /* base00 - グレーブルー */
   --color-text-emphasis: #073642; /* base02 - ダークグレーブルー */
-  --color-accent: #dc322f; /* red - Solarized赤 */
-  --color-accent-hover: #cb4b16; /* orange - Solarizedオレンジ */
+  --color-accent: #f3927e; /* red - Solarized赤 */
+  --color-accent-hover: #f3927e; /* orange - Solarizedオレンジ */
   --color-border: #eee8d5; /* base2 */
   --color-card-bg: #eee8d5; /* base2 - ライトベージュ */
 }
@@ -13,10 +13,10 @@
 [data-theme="dark"] {
   /* ダークモード */
   --color-bg: #1a1a1a; /* 黒 */
-  --color-text: #f5f5dc; /* ベージュ */
-  --color-text-emphasis: #f5f5dc;
-  --color-accent: #ff5733; /* 赤オレンジ */
-  --color-accent-hover: #ff7055;
+  --color-text: #fdf6e3; /* ベージュ */
+  --color-text-emphasis: #eee8d5;
+  --color-accent: #f3927e; /* 赤オレンジ */
+  --color-accent-hover: #f3927e;
   --color-border: #2a2a2a;
   --color-card-bg: #242424;
 }
@@ -60,7 +60,7 @@ h3 {
 }
 
 a {
-  color: var(--color-accent);
+  color: var(--color-text);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -68,7 +68,6 @@ a {
 a:hover,
 a:focus {
   color: var(--color-accent-hover);
-  text-decoration: underline;
 }
 
 /* リストのスタイル */
@@ -98,47 +97,6 @@ p {
 
 .icon {
   font-size: 1.5em;
-  color: var(--color-text);
   transition: all 0.2s ease;
   vertical-align: middle;
-}
-/* ナビゲーションのスタイル */
-
-.nav-links {
-  width: 100%;
-  display: none;
-  margin: 0;
-  align-items: center;
-}
-
-.nav-links a {
-  display: block;
-  text-align: center;
-  padding: 10px 0;
-  text-decoration: none;
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: var(--color-text);
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.nav-links a:hover,
-.nav-links a:focus {
-  background-color: var(--color-accent);
-  color: var(--color-bg);
-}
-
-@media screen and (min-width: 636px) {
-  .nav-links {
-    margin: auto 0;
-    display: block;
-    position: static;
-    background: none;
-  }
-
-  .nav-links a {
-    display: inline-block;
-    padding: 15px 20px;
-  }
 }
