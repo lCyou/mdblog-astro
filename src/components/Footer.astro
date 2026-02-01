@@ -3,29 +3,70 @@ import { Icon } from 'astro-icon/components';
 
 ---
 
-<footer>
-  <Icon name="mdi:github" class="icon" />
-  <Icon name="mdi:twitter" class="icon" />
+<footer class="footer">
+  <div class="footer-content">
+    <div>
+      © 2025 lCyou
+    </div>
+    |
+    <a href="https://github.com/lcyou">
+      GitHub <Icon name="mdi:github" class="icon" />
+    </a>
+    | 
+    <a href="https://twitter.com/lcyou">
+      Twitter <Icon name="mdi:twitter" class="icon" />
+    </a>
+    | 
+    <a href="/rss.xml">
+      RSS<Icon name="system-uicons:waves" class="icon" style="width: 1.2em; height: 1.2em;" />
+    </a>
+  </div>
+
+  <div class="footer-blank">
+  </div>
 </footer>
 
 <style>
   footer {
-    padding: 2rem 0;
-    display: flex;
+    padding: 2rem 1rem;
     gap: 1rem;
-    align-items: center;
+    align-content: center;
     border-top: 1px solid var(--color-border);
     margin-top: 2rem;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .footer-content {
+    gap: 0.25rem 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+  }
+
+  .footer-content > * {
+    white-space: nowrap;
   }
 
   .icon {
-    color: var(--color-text);
-    width: 2em;
-    height: 2em;
+    width: 0.8em;
+    height: 0.8em;
     transition: color 0.2s ease;
+    align-items: center;
   }
 
-  .icon:hover {
-    color: var(--color-accent);
+  .footer-blank {
+    height: 7rem;
+    min-height: 60px;
   }
+
+  @media screen and (max-width: 600px) {
+    footer {
+      padding: 1.5rem 0.5rem;
+    }
+
+  }
+
 </style>

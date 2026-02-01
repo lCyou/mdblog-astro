@@ -1,8 +1,18 @@
 ---
 import Navigation from '@/components/Navigation.astro';
 ---
-<header>
+<header class="header">
   <nav>
     <Navigation />
   </nav>
 </header>
+
+<style>
+  .header {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    z-index: 1000;
+  }
+</style>
