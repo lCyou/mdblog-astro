@@ -19,7 +19,7 @@ const { minutesRead } = Astro.props.frontmatter;
     <div class="tags">
       <Icon name="mdi:tag-multiple-outline" class="icon" />
       {frontmatter.tags.map((tag: string) => (
-        <p class="tag"><a href={`/tags/${tag}`}>{tag}</a></p>
+        <p class="tag">#<a href={`/tags/${tag}`}>{tag}</a></p>
       ))}
     </div>
   </div>

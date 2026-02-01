@@ -1,18 +1,52 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import { Icon } from 'astro-icon/components';
+
 const allPosts = Object.values(import.meta.glob('./posts/**/*.md', { eager: true }));
 const pageTitle = "私のAstro学習ブログ";
 ---
 
 <BaseLayout pageTitle={pageTitle}>
-  <p>ここには、私がAstroを学んでいく旅の様子を投稿します。</p>
+
   <ul>
     {
-      allPosts.map((post: any) => 
-        <li>
-          <a href={post.url}>{post.frontmatter.title}</a>
-        </li>
-      )
+      allPosts.map((post: any) => {
+        const category = post.frontmatter.tags.includes("tech") ? "tech" : "life";
+        return (
+          <li class={`post-item post-${category}`}>
+            <a href={post.url}>
+              <Icon name={category === "tech" ? "mdi:code-tags" : "mdi:heart"} class="category-icon" />
+              <span class="post-title">{post.frontmatter.title}</span>
+              <span class="post-date">{post.frontmatter.pubDate.toString().slice(0,10)}</span>
+            </a>
+          </li>
+        );
+      })
     }
   </ul>
 </BaseLayout>
+
+<style>
+  .post-item a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .category-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    color: var(--color-text);
+    transition: color 0.2s ease;
+  }
+
+  .post-title {
+    flex: 1;
+  }
+
+  .post-date {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+</style>
