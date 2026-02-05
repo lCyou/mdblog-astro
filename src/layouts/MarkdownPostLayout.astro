@@ -5,7 +5,7 @@ import { Icon } from 'astro-icon/components';
 const { frontmatter } = Astro.props;
 const { minutesRead } = Astro.props.frontmatter;
 ---
-<BaseLayout>
+<BaseLayout pageTitle={frontmatter.title}>
   <div class="post-header">
     <h1>{frontmatter.title}</h1>
     <div>

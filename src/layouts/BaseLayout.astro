@@ -11,7 +11,7 @@ const { pageTitle } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>{pageTitle}</title>
+    <title>{pageTitle + " | lCyou"}</title>
     <script is:inline>
       // ページロード前にテーマを適用（フラッシュ防止）
       (function() {
@@ -24,7 +24,6 @@ const { pageTitle } = Astro.props;
   <body>
     <ThemeToggle />
     <Header />
-    <h1>{pageTitle}</h1>
 	  <slot />
     <Footer />
   </body>
