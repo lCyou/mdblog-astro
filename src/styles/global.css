@@ -2,24 +2,35 @@
 :root {
   /* ライトモード - Solarized Light */
   --color-bg: #fdf6e3; /* base3 - クリームイエロー */
-  --color-text: #657b83; /* base00 - グレーブルー */
-  --color-text-emphasis: #073642; /* base02 - ダークグレーブルー */
+  --color-text: #605d52; /* base00 - グレーブルー */
+  --color-text-emphasis: #33312d; /* base02 - ダークグレーブルー */
   --color-accent: #f3927e; /* red - Solarized赤 */
   --color-accent-hover: #f3927e; /* orange - Solarizedオレンジ */
   --color-border: #eee8d5; /* base2 */
   --color-card-bg: #eee8d5; /* base2 - ライトベージュ */
 }
 
-[data-theme="dark"] {
+.dark {
   /* ダークモード */
-  --color-bg: #1a1a1a; /* 黒 */
+  --color-bg: #33312d; /* 黒 */
   --color-text: #fdf6e3; /* ベージュ */
   --color-text-emphasis: #eee8d5;
   --color-accent: #f3927e; /* 赤オレンジ */
   --color-accent-hover: #f3927e;
   --color-border: #2a2a2a;
-  --color-card-bg: #242424;
+  --color-card-bg: #605d52;
 }
+
+  .dark .astro-code,
+  .dark .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    /* Optional, if you also want font styles */
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
 
 * {
   box-sizing: border-box;
@@ -70,25 +81,6 @@ a:focus {
   color: var(--color-accent-hover);
 }
 
-/* リストのスタイル */
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-ul li {
-  margin: 0.75rem 0;
-  padding: 0.75rem;
-  background-color: var(--color-card-bg);
-  border-left: 4px solid var(--color-accent);
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-ul li:hover {
-  transform: translateX(4px);
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-}
 
 /* 段落 */
 p {

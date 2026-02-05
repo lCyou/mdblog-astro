@@ -1,9 +1,18 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-const pageTitle = "Home";
+import DecryptedText from '@/components/DecryptedText';
+const pageTitle = "lCyou's Home";
 ---
 
 <BaseLayout pageTitle={pageTitle}>
-	<h2>サブタイトルらしい</h2>
+	<h2>
+		<DecryptedText text="サブタイトルらしい" client:load />
+	</h2>
+	
+	<div style="margin-top: 2rem;">
+		<p>
+			<DecryptedText text="Hover over me to decrypt again!" speed={30} client:visible />
+		</p>
+	</div>
 </BaseLayout>
 

@@ -1,12 +1,12 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro'
+import PageLayout from '@/layouts/PageLayout.astro'
 import { Icon } from 'astro-icon/components';
 
 const allPosts = Object.values(import.meta.glob('./posts/**/*.md', { eager: true }));
 const pageTitle = "私のAstro学習ブログ";
 ---
 
-<BaseLayout pageTitle={pageTitle}>
+<PageLayout pageTitle={pageTitle}>
 
   <ul>
     {
@@ -24,7 +24,7 @@ const pageTitle = "私のAstro学習ブログ";
       })
     }
   </ul>
-</BaseLayout>
+</PageLayout>
 
 <style>
   .post-item a {

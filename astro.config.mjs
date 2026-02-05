@@ -8,6 +8,12 @@ import preact from '@astrojs/preact';
 export default defineConfig({
   markdown: {
     remarkPlugins: [remarkReadingTime],
+    shikiConfig: {
+      themes: {
+        light: 'rose-pine-dawn',
+        dark: 'gruvbox-dark-medium',
+      },
+    },
   },
 
   site: "https://lcyou.netlify.app",
