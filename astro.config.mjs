@@ -5,6 +5,8 @@ import icon from 'astro-icon';
 
 import preact from '@astrojs/preact';
 
+import cloudflare from '@astrojs/cloudflare';
+
 export default defineConfig({
   markdown: {
     remarkPlugins: [remarkReadingTime],
@@ -25,5 +27,7 @@ export default defineConfig({
         '@': '/src'
       }
     }
-  }
+  },
+
+  adapter: cloudflare()
 });
