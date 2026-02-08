@@ -18,7 +18,7 @@ export default defineConfig({
     },
   },
 
-  site: "https://lcyou.netlify.app",
+  site: "https://blog.lcyou.me",
   integrations: [icon(), preact()],
 
   vite: {
