@@ -9,6 +9,9 @@ import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   markdown: {
+    markdown:{
+      remarkPlugins: [remarkModifiedTime],
+    },
     remarkPlugins: [remarkReadingTime],
     shikiConfig: {
       themes: {
