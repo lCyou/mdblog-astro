@@ -1,0 +1,168 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+const pageTitle = "500 - Server Error";
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <div class="error-container">
+    <div class="error-content">
+      <h1 class="error-code">500</h1>
+      <h2 class="error-title">Internal Server Error</h2>
+      <p class="error-description">
+        申し訳ございません。サーバーでエラーが発生しました。<br />
+        問題が解決しない場合は、<a href="https://twitter.com/lCyo_u">twitter</a>, <a href="https://bsky.app/profile/lcyou.bsky.social">bluesky</a>までお知らせください。
+      </p>
+
+      <div class="error-actions">
+        <a href="/" class="btn btn-primary">ホームに戻る</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 2rem;
+  }
+
+  .error-content {
+    text-align: center;
+    max-width: 600px;
+  }
+
+  .error-code {
+    font-size: clamp(5rem, 15vw, 10rem);
+    font-weight: 900;
+    margin: 0;
+    line-height: 1;
+    color: var(--color-accent);
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .error-title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    margin: 1rem 0;
+    color: var(--color-text-emphasis);
+    animation: fadeInUp 0.6s ease-out 0.1s both;
+  }
+
+  .error-description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--color-text);
+    margin: 1.5rem 0 2rem;
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+  }
+
+  .contact-box {
+    background: var(--color-card-bg);
+    border: 2px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 2rem 0 2.5rem;
+    animation: fadeInUp 0.6s ease-out 0.3s both;
+  }
+
+  .contact-title {
+    font-size: 1.25rem;
+    margin: 0 0 1rem;
+    color: var(--color-text-emphasis);
+  }
+
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .twitter-link {
+    background: var(--color-text-emphasis);
+    color: var(--color-bg);
+  }
+
+  .twitter-link:hover {
+    background: var(--color-text);
+    transform: translateY(-2px);
+  }
+
+  .twitter-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 0.6s ease-out 0.4s both;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-card-bg);
+    transform: translateY(-2px);
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .error-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .btn {
+      width: 100%;
+    }
+
+    .contact-box {
+      padding: 1.25rem;
+    }
+  }
+</style>
