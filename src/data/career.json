@@ -1,0 +1,33 @@
+{
+  "timeline": [
+    {
+      "id": "proj-2024",
+      "type": "project",
+      "title": "個人ブログサイトの開発",
+      "period": "2024年 - 現在",
+      "description": "Astroを使用した個人ブログサイトの開発。MarkdownベースのCMS、ダークモード対応、Cloudflare Pagesへのデプロイを実装。",
+      "url": "https://github.com/lcyou/mdblog-astro"
+    },
+    {
+      "id": "exp-2023",
+      "type": "experience",
+      "title": "株式会社サンプル / ソフトウェアエンジニア",
+      "period": "2023年4月 - 現在",
+      "description": "Webアプリケーションの設計・開発・運用を担当。React/TypeScriptを使用したフロントエンド開発、Node.jsによるバックエンドAPI開発を実施。"
+    },
+    {
+      "id": "proj-2022",
+      "type": "project",
+      "title": "OSS活動",
+      "period": "2022年 -",
+      "description": "オープンソースプロジェクトへの貢献。バグ修正、機能追加、ドキュメント整備などを実施。"
+    },
+    {
+      "id": "exp-2021",
+      "type": "experience",
+      "title": "フリーランス / Webデベロッパー",
+      "period": "2021年1月 - 2023年3月",
+      "description": "複数のクライアント向けにWebサイト・アプリケーションの開発を実施。要件定義から納品まで一貫して対応。"
+    }
+  ]
+}

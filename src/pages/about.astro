@@ -1,15 +1,42 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro'
+import PageLayout from '@/layouts/PageLayout.astro';
+import TimelineItem from '@/components/TimelineItem.astro';
+import careerData from '@/data/career.json';
 
-const pageTitle = "私について";
+const pageTitle = "About Me";
+const timeline = careerData.timeline;
 ---
-<BaseLayout> 
-  <body>
-    <h1>{pageTitle}</h1>
-    <h2>... そして私の新しいAstroサイトについて！</h2>
 
-    <p>私はAstroの入門チュートリアルを進めています。これは私のウェブサイトの2番目のページで、自分で作った初めてのページです！</p>
+<PageLayout pageTitle={pageTitle}>
+  <div class="about-container">
+    <header class="about-header">
+      <h1>About Me</h1>
+    </header>
+    
+    <div class="timeline">
+      {timeline.map((item, index) => (
+        <TimelineItem
+          type={item.type}
+          title={item.title}
+          period={item.period}
+          description={item.description}
+          url={item.url}
+          isLast={index === timeline.length - 1}
+        />
+      ))}
+    </div>
+  </div>
+</PageLayout>
 
-    <p>このサイトはチュートリアルを進めるにつれて更新されていきます。定期的にチェックして、私の旅の様子を見に来てください！</p>
-  </body>
-</BaseLayout>
+<style>
+  .about-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .timeline {
+    margin-top: 2rem;
+    padding: 1rem 0;
+  }
+  
+</style>
