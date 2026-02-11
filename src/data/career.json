@@ -1,33 +1,26 @@
 {
   "timeline": [
     {
-      "id": "proj-2024",
+      "id": "proj-2026",
       "type": "project",
-      "title": "個人ブログサイトの開発",
-      "period": "2024年 - 現在",
-      "description": "Astroを使用した個人ブログサイトの開発。MarkdownベースのCMS、ダークモード対応、Cloudflare Pagesへのデプロイを実装。",
+      "title": "個人ブログサイトの作りました！",
+      "period": "2026年2月",
+      "description": "Astroを使用した個人ブログサイトの開発。MarkdownベースのCMS、ダークモード対応、Cloudflare Workersへのデプロイを実装。",
       "url": "https://github.com/lcyou/mdblog-astro"
     },
     {
-      "id": "exp-2023",
+      "id": "exp-2025",
       "type": "experience",
-      "title": "株式会社サンプル / ソフトウェアエンジニア",
-      "period": "2023年4月 - 現在",
-      "description": "Webアプリケーションの設計・開発・運用を担当。React/TypeScriptを使用したフロントエンド開発、Node.jsによるバックエンドAPI開発を実施。"
+      "title": "ウェルスナビ株式会社 / ソフトウェアエンジニア",
+      "period": "2025年4月 - 現在",
+      "description": "サービス基盤グループでID基盤に所属。ID基盤の開発・運用を担当し、ユーザー認証やセキュリティ関連の機能を実装。"
     },
     {
-      "id": "proj-2022",
-      "type": "project",
-      "title": "OSS活動",
-      "period": "2022年 -",
-      "description": "オープンソースプロジェクトへの貢献。バグ修正、機能追加、ドキュメント整備などを実施。"
-    },
-    {
-      "id": "exp-2021",
+      "id": "exp-2024",
       "type": "experience",
-      "title": "フリーランス / Webデベロッパー",
-      "period": "2021年1月 - 2023年3月",
-      "description": "複数のクライアント向けにWebサイト・アプリケーションの開発を実施。要件定義から納品まで一貫して対応。"
+      "title": "株式会社MICIN / Webエンジニア（インターン）",
+      "period": "2024年4月 - 2025年3月",
+      "description": "複数プラットフォームの基盤開発チームに所属し、Webサイト・アプリケーションの開発を実施。"
     }
   ]
 }
