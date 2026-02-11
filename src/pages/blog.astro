@@ -2,11 +2,17 @@
 import PageLayout from '@/layouts/PageLayout.astro'
 import { Icon } from 'astro-icon/components';
 
-const allPosts = Object.values(import.meta.glob('./posts/**/*.md', { eager: true }));
-const pageTitle = "私のAstro学習ブログ";
+const allPosts = Object.values(import.meta.glob('./posts/**/*.md', { eager: true }))
+  .sort((a, b) => {
+    const aDate = new Date(a.frontmatter.pubDate);
+    const bDate = new Date(b.frontmatter.pubDate);
+    return bDate.getTime() - aDate.getTime();
+  });
+const pageTitle = "Blog";
 ---
 
 <PageLayout pageTitle={pageTitle}>
+  <h1>My Posts</h1>
 
   <ul>
     {

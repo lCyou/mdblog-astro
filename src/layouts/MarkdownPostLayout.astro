@@ -23,7 +23,7 @@ const { minutesRead } = Astro.props.frontmatter;
         ,<Icon name="mdi:language-markdown-outline" class="icon" />
       </p>
       <p style="display: flex; justify-content: center;">
-        publish: {frontmatter.pubDate.toString().slice(0,10)} / last modified: {lastModified}
+        Published: {frontmatter.pubDate.toString().slice(0,10)} / Last modified: {lastModified}
       </p>
     </div>
     <div class="tags">
@@ -57,8 +57,18 @@ const { minutesRead } = Astro.props.frontmatter;
   }
 
   :global(h2) {
-    font-size: 1.5em;
     border-left: 4px solid var(--color-accent);
+    padding-left: 1em;
+    margin-left: 0;
+  }
+
+  :global(h3) {
+    padding-left: 1em;
+    margin-left: 0;
+  }
+
+  :global(h4) {
+    font-size: 1.1em;
     padding-left: 1em;
     margin-left: 0;
   }
