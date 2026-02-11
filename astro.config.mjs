@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import { remarkReadingTime } from './src/scripts/remark-reading-time.mjs';
+import { remarkModifiedTime } from './src/scripts/remark-modified-time.mjs';
 
 import icon from 'astro-icon';
 
@@ -9,10 +10,7 @@ import cloudflare from '@astrojs/cloudflare';
 
 export default defineConfig({
   markdown: {
-    markdown:{
-      remarkPlugins: [remarkModifiedTime],
-    },
-    remarkPlugins: [remarkReadingTime],
+    remarkPlugins: [remarkReadingTime, remarkModifiedTime],
     shikiConfig: {
       themes: {
         light: 'rose-pine-dawn',
