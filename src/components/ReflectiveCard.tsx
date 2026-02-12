@@ -1,4 +1,5 @@
 import type { JSX } from 'preact';
+import { useRef, useEffect } from 'preact/hooks';
 import styles from './ReflectiveCard.module.css';
 import DecryptedText from './DecryptedText';
 
@@ -34,6 +35,36 @@ const ReflectiveCard = ({
   const baseFrequency = 0.03 / Math.max(0.1, noiseScale);
   const saturation = 1 - Math.max(0, Math.min(1, grayscale));
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      // Safari requires explicit muted and play trigger
+      video.muted = true;
+      
+      // Handle load errors
+      const handleError = () => {
+        console.error('Video failed to load');
+      };
+      
+      video.addEventListener('error', handleError);
+      
+      const playPromise = video.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          // Silent fail - autoplay was blocked by browser policy
+          console.warn('Video autoplay was prevented:', error);
+        });
+      }
+      
+      return () => {
+        video.removeEventListener('error', handleError);
+      };
+    }
+  }, []);
+
   const cssVariables = {
     '--blur-strength': `${blurStrength}px`,
     '--metalness': metalness,
@@ -48,68 +79,25 @@ const ReflectiveCard = ({
       className={`${styles.card} ${className}`}
       style={{ ...style, ...cssVariables }}
     >
-      {/* <svg className={styles.svgFilter} aria-hidden="true">
-        <defs>
-          <filter id="metallic-displacement" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="turbulence" baseFrequency={baseFrequency} numOctaves="2" result="noise" />
-            <feColorMatrix in="noise" type="luminanceToAlpha" result="noiseAlpha" />
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="noise"
-              scale={displacementStrength}
-              xChannelSelector="R"
-              yChannelSelector="G"
-              result="rippled"
-            />
-            <feSpecularLighting
-              in="noiseAlpha"
-              surfaceScale={displacementStrength}
-              specularConstant={specularConstant}
-              specularExponent="20"
-              lightingColor="#ffffff"
-              result="light"
-            >
-              <fePointLight x="0" y="0" z="300" />
-            </feSpecularLighting>
-            <feComposite in="light" in2="rippled" operator="in" result="light-effect" />
-            <feBlend in="light-effect" in2="rippled" mode="screen" result="metallic-result" />
-            <feColorMatrix
-              in="SourceAlpha"
-              type="matrix"
-              values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"
-              result="solidAlpha"
-            />
-            <feMorphology in="solidAlpha" operator="erode" radius="45" result="erodedAlpha" />
-            <feGaussianBlur in="erodedAlpha" stdDeviation="10" result="blurredMap" />
-            <feComponentTransfer in="blurredMap" result="glassMap">
-              <feFuncA type="linear" slope="0.5" intercept="0" />
-            </feComponentTransfer>
-            <feDisplacementMap
-              in="metallic-result"
-              in2="glassMap"
-              scale={glassDistortion}
-              xChannelSelector="A"
-              yChannelSelector="A"
-              result="final"
-            />
-          </filter>
-        </defs>
-      </svg> */}
 
       <video
+        ref={videoRef}
         autoPlay
         loop
         playsInline
+        webkit-playsinline=""
         muted
+        defaultMuted
+        preload="auto"
         className={styles.video}
         style={{
-          filter:
-            'saturate(var(--saturation, 0)) contrast(120%) brightness(110%) blur(var(--blur-strength, 12px)) url(#metallic-displacement)'
+          filter: 'saturate(var(--saturation, 0)) contrast(120%) brightness(110%)'
         }}
       >
         <source src="/assets/videos/fallback.mp4" type="video/mp4" />
-        <source src="/assets/videos/fallback.webm" type="video/webm" />
       </video>
+
+      <div className={styles.blurOverlay} />
 
       <div className={styles.noiseOverlay} />
 
