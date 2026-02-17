@@ -5,7 +5,11 @@ import ThemeToggle from '@/components/ThemeToggle.astro';
 import ThemeIcon from '@/components/ThemeIcon.astro';
 import '@/styles/global.css';
 
-const { pageTitle } = Astro.props;
+const { pageTitle, description, ogImage } = Astro.props;
+const siteUrl = 'https://blog.lcyou.me';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+const defaultOgImage = `${siteUrl}/favicon.svg`;
+const ogImageUrl = ogImage || defaultOgImage;
 ---
 <html lang="ja">
   <head>
@@ -14,6 +18,20 @@ const { pageTitle } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle + " | lCyou"}</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:title" content={pageTitle + " | lCyou"} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:image" content={ogImageUrl} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={pageUrl} />
+    <meta property="twitter:title" content={pageTitle + " | lCyou"} />
+    {description && <meta property="twitter:description" content={description} />}
+    <meta property="twitter:image" content={ogImageUrl} />
     <script is:inline>
       // ページロード前にテーマを適用（フラッシュ防止）
       (function() {

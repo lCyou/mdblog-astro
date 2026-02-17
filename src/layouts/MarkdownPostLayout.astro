@@ -15,8 +15,14 @@ const lastModified = dayjs(Astro.props.frontmatter.lastModified)
 
 const { frontmatter } = Astro.props;
 const { minutesRead } = Astro.props.frontmatter;
+
+// Generate OGP image URL from the current URL
+const urlPath = Astro.url.pathname;
+const slug = urlPath.split('/').filter(Boolean).pop() || '';
+const siteUrl = 'https://blog.lcyou.me';
+const ogImage = `${siteUrl}/og/${slug}.svg`;
 ---
-<BaseLayout pageTitle={frontmatter.title}>
+<BaseLayout pageTitle={frontmatter.title} description={frontmatter.description} ogImage={ogImage}>
   <div class="post-header">
     <h1 class="title">{frontmatter.title}</h1>
     <div class="meta">
