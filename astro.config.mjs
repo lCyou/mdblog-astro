@@ -27,6 +27,9 @@ export default defineConfig({
       alias: {
         '@': '/src'
       }
+    },
+    define: {
+      '__dirname': JSON.stringify('/'),
     }
   },
 

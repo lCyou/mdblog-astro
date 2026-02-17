@@ -15,8 +15,12 @@ const lastModified = dayjs(Astro.props.frontmatter.lastModified)
 
 const { frontmatter } = Astro.props;
 const { minutesRead } = Astro.props.frontmatter;
+
+// Generate OG image URL from the post slug
+const slug = Astro.url.pathname.split('/').filter(Boolean).pop() || '';
+const ogImage = `/og/${slug}.png`;
 ---
-<BaseLayout pageTitle={frontmatter.title}>
+<BaseLayout pageTitle={frontmatter.title} description={frontmatter.description} ogImage={ogImage}>
   <div class="post-header">
     <h1 class="title">{frontmatter.title}</h1>
     <div class="meta">

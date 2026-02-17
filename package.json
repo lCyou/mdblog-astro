@@ -18,6 +18,8 @@
     "@iconify-json/system-uicons": "^1.2.4",
     "astro": "^5.17.1",
     "astro-icon": "^1.1.5",
+    "astro-og-canvas": "^0.10.1",
+    "canvaskit-wasm": "^0.40.0",
     "dayjs": "^1.11.19",
     "mdast-util-to-string": "^4.0.0",
     "preact": "^10.28.3",

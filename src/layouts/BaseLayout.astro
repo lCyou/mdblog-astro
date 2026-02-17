@@ -5,7 +5,9 @@ import ThemeToggle from '@/components/ThemeToggle.astro';
 import ThemeIcon from '@/components/ThemeIcon.astro';
 import '@/styles/global.css';
 
-const { pageTitle } = Astro.props;
+const { pageTitle, description, ogImage } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = ogImage && Astro.site ? new URL(ogImage, Astro.site).toString() : undefined;
 ---
 <html lang="ja">
   <head>
@@ -14,6 +16,22 @@ const { pageTitle } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle + " | lCyou"}</title>
+    
+    <!-- Open Graph / Social Media meta tags -->
+    <meta property="og:title" content={pageTitle + " | lCyou"} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    {description && <meta property="og:description" content={description} />}
+    {description && <meta name="description" content={description} />}
+    {ogImageURL && <meta property="og:image" content={ogImageURL} />}
+    <meta property="og:site_name" content="lCyou's Blog" />
+    
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle + " | lCyou"} />
+    {description && <meta name="twitter:description" content={description} />}
+    {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+    
     <script is:inline>
       // ページロード前にテーマを適用（フラッシュ防止）
       (function() {
