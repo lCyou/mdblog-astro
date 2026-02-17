@@ -27,20 +27,20 @@ export const { getStaticPaths, GET } = await OGImageRoute({
       bgGradient: [[24, 24, 27]],
       border: { color: [63, 63, 70], width: 20 },
       padding: 120,
-      // Use local system fonts
+      // Use Noto Sans CJK fonts which support Japanese characters
       fonts: [
-        '/usr/share/fonts/truetype/lato/Lato-Bold.ttf',
-        '/usr/share/fonts/truetype/lato/Lato-Regular.ttf',
+        '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc',
+        '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
       ],
       font: {
         title: {
-          families: ['Lato'],
+          families: ['Noto Sans CJK JP'],
           weight: 'Bold',
           size: 70,
           color: [255, 255, 255],
         },
         description: {
-          families: ['Lato'],
+          families: ['Noto Sans CJK JP'],
           weight: 'Normal',
           size: 40,
           color: [200, 200, 200],
