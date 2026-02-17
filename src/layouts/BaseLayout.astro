@@ -9,6 +9,7 @@ import { siteConfig } from '@/data/seo';
 
 const { pageTitle, description, image, article } = Astro.props;
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const pageDescription = description || siteConfig.description;
 ---
 <html lang="ja">
   <head>
@@ -18,7 +19,7 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="generator" content={Astro.generator} />
     <SEO
       title={pageTitle ? `${pageTitle} | ${siteConfig.title}` : siteConfig.title}
-      description={description || siteConfig.description}
+      description={pageDescription}
       canonical={pageUrl}
       openGraph={{
         basic: {
@@ -28,7 +29,7 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
           url: pageUrl,
         },
         optional: {
-          description: description || siteConfig.description,
+          description: pageDescription,
           locale: siteConfig.locale,
           siteName: siteConfig.title,
         },
