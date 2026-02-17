@@ -6,7 +6,7 @@ import ThemeIcon from '@/components/ThemeIcon.astro';
 import '@/styles/global.css';
 
 const { pageTitle, description, ogImage } = Astro.props;
-const siteUrl = 'https://blog.lcyou.me';
+const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const defaultOgImage = `${siteUrl}/favicon.svg`;
 const ogImageUrl = ogImage || defaultOgImage;

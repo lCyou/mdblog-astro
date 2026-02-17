@@ -19,7 +19,7 @@ const { minutesRead } = Astro.props.frontmatter;
 // Generate OGP image URL from the current URL
 const urlPath = Astro.url.pathname;
 const slug = urlPath.split('/').filter(Boolean).pop() || '';
-const siteUrl = 'https://blog.lcyou.me';
+const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
 const ogImage = `${siteUrl}/og/${slug}.svg`;
 ---
 <BaseLayout pageTitle={frontmatter.title} description={frontmatter.description} ogImage={ogImage}>
