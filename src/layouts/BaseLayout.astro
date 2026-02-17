@@ -1,11 +1,14 @@
 ---
+import { SEO } from 'astro-seo';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
 import ThemeIcon from '@/components/ThemeIcon.astro';
 import '@/styles/global.css';
+import { siteConfig } from '@/data/seo';
 
-const { pageTitle } = Astro.props;
+const { pageTitle, description, image, article } = Astro.props;
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 ---
 <html lang="ja">
   <head>
@@ -13,7 +16,29 @@ const { pageTitle } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>{pageTitle + " | lCyou"}</title>
+    <SEO
+      title={pageTitle ? `${pageTitle} | ${siteConfig.title}` : siteConfig.title}
+      description={description || siteConfig.description}
+      canonical={pageUrl}
+      openGraph={{
+        basic: {
+          title: pageTitle || siteConfig.title,
+          type: article ? 'article' : 'website',
+          image: image || siteConfig.image,
+          url: pageUrl,
+        },
+        optional: {
+          description: description || siteConfig.description,
+          locale: siteConfig.locale,
+          siteName: siteConfig.title,
+        },
+      }}
+      twitter={{
+        card: 'summary',
+        site: siteConfig.twitter,
+        creator: siteConfig.twitter,
+      }}
+    />
     <script is:inline>
       // ページロード前にテーマを適用（フラッシュ防止）
       (function() {
