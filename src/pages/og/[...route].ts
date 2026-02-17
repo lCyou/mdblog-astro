@@ -28,6 +28,8 @@ export const { getStaticPaths, GET } = await OGImageRoute({
       border: { color: [63, 63, 70], width: 20 },
       padding: 120,
       // Use Noto Sans CJK fonts which support Japanese characters
+      // Note: These fonts must be installed in the build environment
+      // For Ubuntu/Debian: sudo apt-get install fonts-noto-cjk
       fonts: [
         '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc',
         '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',

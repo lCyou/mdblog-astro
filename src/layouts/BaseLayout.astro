@@ -7,6 +7,7 @@ import '@/styles/global.css';
 
 const { pageTitle, description, ogImage } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = ogImage && Astro.site ? new URL(ogImage, Astro.site).toString() : undefined;
 ---
 <html lang="ja">
   <head>
@@ -22,14 +23,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonicalURL} />
     {description && <meta property="og:description" content={description} />}
     {description && <meta name="description" content={description} />}
-    {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
+    {ogImageURL && <meta property="og:image" content={ogImageURL} />}
     <meta property="og:site_name" content="lCyou's Blog" />
     
     <!-- Twitter Card meta tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle + " | lCyou"} />
     {description && <meta name="twitter:description" content={description} />}
-    {ogImage && <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />}
+    {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
     
     <script is:inline>
       // ページロード前にテーマを適用（フラッシュ防止）
