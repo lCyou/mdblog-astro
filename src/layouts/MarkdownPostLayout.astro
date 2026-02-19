@@ -15,8 +15,12 @@ const lastModified = dayjs(Astro.props.frontmatter.lastModified)
 
 const { frontmatter } = Astro.props;
 const { minutesRead } = Astro.props.frontmatter;
+
+// SEO用の情報を準備
+const description = frontmatter.description || frontmatter.title;
+const image = frontmatter.image?.url || undefined;
 ---
-<BaseLayout pageTitle={frontmatter.title}>
+<BaseLayout pageTitle={frontmatter.title} description={description} image={image} article={true}>
   <div class="post-header">
     <h1 class="title">{frontmatter.title}</h1>
     <div class="meta">
