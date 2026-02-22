@@ -3,11 +3,10 @@ import { SEO } from 'astro-seo';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
-import ThemeIcon from '@/components/ThemeIcon.astro';
 import '@/styles/global.css';
 import { siteConfig } from '@/data/seo';
 
-const { pageTitle, description, ogImage, ogImageAlt, article } = Astro.props;
+const { pageTitle, description, ogImage, ogImageAlt } = Astro.props;
 const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const defaultOgImage = `${siteUrl}/og-default.svg`;
@@ -28,7 +27,7 @@ const ogImageUrl = ogImage || defaultOgImage;
       openGraph={{
         basic: {
           title: pageTitle || siteConfig.title,
-          type: article ? 'article' : 'website',
+          type: 'website',
           image: ogImageUrl,
           url: pageUrl,
         },
