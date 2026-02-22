@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "post": "node scripts/create-post.js",
-    "preview": "astro preview",
+    "preview": "npx astro build && npx wrangler dev",
     "astro": "astro"
   },
   "dependencies": {
