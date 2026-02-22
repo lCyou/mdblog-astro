@@ -1,11 +1,18 @@
 ---
+import { SEO } from 'astro-seo';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
 import ThemeIcon from '@/components/ThemeIcon.astro';
 import '@/styles/global.css';
+import { siteConfig } from '@/data/seo';
 
-const { pageTitle } = Astro.props;
+const { pageTitle, description, ogImage, ogImageAlt, article } = Astro.props;
+const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+const defaultOgImage = `${siteUrl}/favicon.svg`;
+const ogImageUrl = ogImage || defaultOgImage;
+
 ---
 <html lang="ja">
   <head>
@@ -13,7 +20,34 @@ const { pageTitle } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>{pageTitle + " | lCyou"}</title>
+    <SEO
+      title={pageTitle ? `${pageTitle} | ${siteConfig.title}` : siteConfig.title}
+      description={description}
+      canonical={pageUrl}
+      openGraph={{
+        basic: {
+          title: pageTitle || siteConfig.title,
+          type: article ? 'article' : 'website',
+          image: ogImageUrl,
+          url: pageUrl,
+        },
+        optional: {
+          description: description,
+          locale: siteConfig.locale,
+          siteName: siteConfig.title,
+        },
+        image: {
+          alt: ogImageAlt || pageTitle || siteConfig.title,
+          width: 1200,
+          height: 630,
+        },
+      }}
+      twitter={{
+        card: 'summary_large_image',
+        site: siteConfig.twitter,
+        creator: siteConfig.twitter,
+      }}
+    />
     <script is:inline>
       // ページロード前にテーマを適用（フラッシュ防止）
       (function() {
