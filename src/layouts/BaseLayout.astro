@@ -7,7 +7,7 @@ import ThemeIcon from '@/components/ThemeIcon.astro';
 import '@/styles/global.css';
 import { siteConfig } from '@/data/seo';
 
-const { pageTitle, description, ogImage } = Astro.props;
+const { pageTitle, description, ogImage, ogImageAlt, article } = Astro.props;
 const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const defaultOgImage = `${siteUrl}/favicon.svg`;
@@ -22,23 +22,28 @@ const ogImageUrl = ogImage || defaultOgImage;
     <meta name="generator" content={Astro.generator} />
     <SEO
       title={pageTitle ? `${pageTitle} | ${siteConfig.title}` : siteConfig.title}
-      description={pageDescription}
+      description={description}
       canonical={pageUrl}
       openGraph={{
         basic: {
           title: pageTitle || siteConfig.title,
           type: article ? 'article' : 'website',
-          image: image || siteConfig.image,
+          image: ogImageUrl,
           url: pageUrl,
         },
         optional: {
-          description: pageDescription,
+          description: description,
           locale: siteConfig.locale,
           siteName: siteConfig.title,
         },
+        image: {
+          alt: ogImageAlt || pageTitle || siteConfig.title,
+          width: 1200,
+          height: 630,
+        },
       }}
       twitter={{
-        card: 'summary',
+        card: 'summary_large_image',
         site: siteConfig.twitter,
         creator: siteConfig.twitter,
       }}

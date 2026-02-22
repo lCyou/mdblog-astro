@@ -13,21 +13,23 @@ export async function getStaticPaths() {
     return {
       params: { slug },
       props: {
-        title: post.frontmatter?.title || 'lCyou Blog',
+        title: post.frontmatter?.title || 'lCyouのブログ',
         description: post.frontmatter?.description || '',
         pubDate: post.frontmatter?.pubDate,
         tags: post.frontmatter?.tags || [],
+        author: post.frontmatter?.author || 'unknown',
       },
     };
   });
 }
 
 export const GET: APIRoute = async ({ props }) => {
-  const { title, description, pubDate, tags } = props as {
+  const { title, description, pubDate, tags, author } = props as {
     title: string;
     description: string;
     pubDate: string;
     tags: string[];
+    author: string;
   };
 
   // Format date
@@ -52,101 +54,151 @@ export const GET: APIRoute = async ({ props }) => {
           width: '100%',
           height: '100%',
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          padding: '60px',
-          color: 'white',
+          position: 'relative',
+          background: '#eee8d5', // Solarized light background (light beige)
           fontFamily: 'Noto Sans JP',
         },
         children: [
+          // Left accent border (bold)
+          {
+            type: 'div',
+            props: {
+              style: {
+                position: 'absolute',
+                left: '60px',
+                top: '60px',
+                bottom: '60px',
+                width: '16px',
+                background: '#f3927e', // Coral accent
+                borderRadius: '4px',
+              },
+            },
+          },
+          // Main content
           {
             type: 'div',
             props: {
               style: {
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '20px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '100%',
+                padding: '60px',
+                position: 'relative',
               },
               children: [
+                // Content area (centered)
                 {
-                  type: 'h1',
-                  props: {
-                    style: {
-                      fontSize: '64px',
-                      fontWeight: 'bold',
-                      margin: '0',
-                      lineHeight: '1.2',
-                    },
-                    children: title,
-                  },
-                },
-                description && {
-                  type: 'p',
-                  props: {
-                    style: {
-                      fontSize: '32px',
-                      margin: '0',
-                      opacity: 0.9,
-                    },
-                    children: description,
-                  },
-                },
-                tags.length > 0 && {
                   type: 'div',
                   props: {
                     style: {
                       display: 'flex',
-                      gap: '12px',
-                      flexWrap: 'wrap',
+                      flexDirection: 'column',
+                      gap: '24px',
+                      alignItems: 'flex-start',
+                      maxWidth: '1000px',
                     },
-                    children: tags.map((tag: string) => ({
-                      type: 'span',
-                      props: {
-                        style: {
-                          fontSize: '24px',
-                          background: 'rgba(255, 255, 255, 0.2)',
-                          padding: '8px 16px',
-                          borderRadius: '8px',
+                    children: [
+                      // Title with underline
+                      {
+                        type: 'div',
+                        props: {
+                          style: {
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '12px',
+                          },
+                          children: [
+                            {
+                              type: 'h1',
+                              props: {
+                                style: {
+                                  fontSize: '64px',
+                                  fontWeight: 'bold',
+                                  margin: '0',
+                                  lineHeight: '1.2',
+                                  color: '#33312d', // Dark text
+                                },
+                                children: title,
+                              },
+                            },
+                          ],
                         },
-                        children: `#${tag}`,
                       },
-                    })),
+                      // Description
+                      description && {
+                        type: 'p',
+                        props: {
+                          style: {
+                            fontSize: '28px',
+                            margin: '0',
+                            lineHeight: '1.4',
+                            color: '#605d52', // Medium gray
+                          },
+                          children: description,
+                        },
+                      },
+                      // Tags
+                      tags.length > 0 && {
+                        type: 'div',
+                        props: {
+                          style: {
+                            display: 'flex',
+                            gap: '12px',
+                            flexWrap: 'wrap',
+                          },
+                          children: tags.map((tag: string) => ({
+                            type: 'span',
+                            props: {
+                              style: {
+                                fontSize: '22px',
+                                background: '#eee8d5', // Light beige
+                                color: '#33312d',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                border: '2px solid #d4cbb5', // Darker beige
+                              },
+                              children: `#${tag}`,
+                            },
+                          })),
+                        },
+                      },
+                    ].filter(Boolean),
                   },
                 },
-              ].filter(Boolean),
-            },
-          },
-          {
-            type: 'div',
-            props: {
-              style: {
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              },
-              children: [
+                // Footer (absolute positioning at bottom right)
                 {
                   type: 'div',
                   props: {
                     style: {
-                      fontSize: '28px',
-                      fontWeight: 'bold',
-                    },
-                    children: 'lCyou Blog',
-                  },
-                },
-                formattedDate && {
-                  type: 'div',
-                  props: {
-                    style: {
+                      position: 'absolute',
+                      bottom: '60px',
+                      right: '60px',
+                      display: 'flex',
+                      gap: '12px',
+                      alignItems: 'center',
+                      color: '#605d52',
                       fontSize: '24px',
-                      opacity: 0.8,
                     },
-                    children: formattedDate,
+                    children: [
+                      {
+                        type: 'span',
+                        props: {
+                          children: `${author}`,
+                        },
+                      },
+                      formattedDate && {
+                        type: 'span',
+                        props: {
+                          children: ` / ${formattedDate}`,
+                        },
+                      },
+                    ].filter(Boolean),
                   },
                 },
-              ].filter(Boolean),
+              ],
             },
           },
         ],
