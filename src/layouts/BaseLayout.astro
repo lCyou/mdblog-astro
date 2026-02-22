@@ -1,15 +1,18 @@
 ---
+import { SEO } from 'astro-seo';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
 import ThemeIcon from '@/components/ThemeIcon.astro';
 import '@/styles/global.css';
+import { siteConfig } from '@/data/seo';
 
 const { pageTitle, description, ogImage } = Astro.props;
 const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const defaultOgImage = `${siteUrl}/favicon.svg`;
 const ogImageUrl = ogImage || defaultOgImage;
+
 ---
 <html lang="ja">
   <head>
@@ -17,21 +20,29 @@ const ogImageUrl = ogImage || defaultOgImage;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>{pageTitle + " | lCyou"}</title>
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={pageUrl} />
-    <meta property="og:title" content={pageTitle + " | lCyou"} />
-    {description && <meta property="og:description" content={description} />}
-    <meta property="og:image" content={ogImageUrl} />
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={pageUrl} />
-    <meta property="twitter:title" content={pageTitle + " | lCyou"} />
-    {description && <meta property="twitter:description" content={description} />}
-    <meta property="twitter:image" content={ogImageUrl} />
+    <SEO
+      title={pageTitle ? `${pageTitle} | ${siteConfig.title}` : siteConfig.title}
+      description={pageDescription}
+      canonical={pageUrl}
+      openGraph={{
+        basic: {
+          title: pageTitle || siteConfig.title,
+          type: article ? 'article' : 'website',
+          image: image || siteConfig.image,
+          url: pageUrl,
+        },
+        optional: {
+          description: pageDescription,
+          locale: siteConfig.locale,
+          siteName: siteConfig.title,
+        },
+      }}
+      twitter={{
+        card: 'summary',
+        site: siteConfig.twitter,
+        creator: siteConfig.twitter,
+      }}
+    />
     <script is:inline>
       // ページロード前にテーマを適用（フラッシュ防止）
       (function() {
