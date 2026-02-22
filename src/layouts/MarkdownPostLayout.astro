@@ -18,9 +18,22 @@ const { minutesRead } = Astro.props.frontmatter;
 
 // SEO用の情報を準備
 const description = frontmatter.description || frontmatter.title;
-const image = frontmatter.image?.url || undefined;
+
+// ブログ記事のスラッグを取得（URLパスから）
+const slug = Astro.url.pathname.split('/').filter(Boolean).pop()?.replace('.html', '');
+
+// Satori生成のOG画像URLを構築
+const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
+const ogImage = slug ? `${siteUrl}/og/${slug}.svg` : undefined;
+const ogImageAlt = `${frontmatter.title}のOGイメージ`;
 ---
-<BaseLayout pageTitle={frontmatter.title} description={description} image={image} article={true}>
+<BaseLayout 
+  pageTitle={frontmatter.title} 
+  description={description} 
+  ogImage={ogImage}
+  ogImageAlt={ogImageAlt}
+  article={true}
+>
   <div class="post-header">
     <h1 class="title">{frontmatter.title}</h1>
     <div class="meta">

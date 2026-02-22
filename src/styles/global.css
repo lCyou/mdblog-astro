@@ -1,13 +1,13 @@
 /* カラーテーマ変数 */
 :root {
   /* ライトモード - Solarized Light */
-  --color-bg: #fdf6e3; /* base3 - クリームイエロー */
+  --color-bg: #f9f5d7; /* base3 - クリームイエロー */
   --color-text: #605d52; /* base00 - グレーブルー */
   --color-text-emphasis: #33312d; /* base02 - ダークグレーブルー */
   --color-accent: #f3927e; /* red - Solarized赤 */
   --color-accent-hover: #f3927e; /* orange - Solarizedオレンジ */
-  --color-border: #eee8d5; /* base2 */
-  --color-card-bg: #eee8d5; /* base2 - ライトベージュ */
+  --color-border: #aeac99; /* base2 */
+  --color-card-bg: #e8e4c6; /* base2 - ライトベージュ */
 }
 
 .dark {
@@ -81,6 +81,12 @@ a:focus {
   color: var(--color-accent-hover);
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
 
 /* 段落 */
 p {
@@ -91,4 +97,14 @@ p {
   font-size: 1.5em;
   transition: all 0.2s ease;
   vertical-align: middle;
+}
+
+/* shiki */
+.astro-code {
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 1rem;
+  min-height: 4em;
+  white-space: pre;
+  border-radius: 1rem;
 }

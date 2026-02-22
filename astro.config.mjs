@@ -12,7 +12,7 @@ export default defineConfig({
     remarkPlugins: [remarkReadingTime, remarkModifiedTime],
     shikiConfig: {
       themes: {
-        light: 'rose-pine-dawn',
+        light: 'everforest-dark',
         dark: 'gruvbox-dark-medium',
       },
     },
