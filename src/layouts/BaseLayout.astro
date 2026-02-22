@@ -10,8 +10,9 @@ const { pageTitle, description, ogImage, ogImageAlt } = Astro.props;
 const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
 const defaultOgImage = `${siteUrl}/og-default.png`;
-const ogImageUrl = ogImage || defaultOgImage;
-
+const ogImageUrl = ogImage
+  ? (ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`)
+  : defaultOgImage;
 ---
 <html lang="ja">
   <head>
