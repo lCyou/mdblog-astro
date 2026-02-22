@@ -6,6 +6,7 @@ const pageTitle = "タグインデックス";
 ---
 
 <BaseLayout pageTitle={pageTitle}>
+  <h1>タグインデックス</h1>
   <div class="tags">
     {tags.map((tag) => (
       <p class="tag">#<a href={`/tags/${tag}`}>{tag}</a></p>
