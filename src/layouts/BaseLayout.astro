@@ -9,9 +9,10 @@ import { siteConfig } from '@/data/seo';
 const { pageTitle, description, ogImage, ogImageAlt } = Astro.props;
 const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
-const defaultOgImage = `${siteUrl}/og-default.svg`;
-const ogImageUrl = ogImage || defaultOgImage;
-
+const defaultOgImage = `${siteUrl}/og-default.png`;
+const ogImageUrl = ogImage
+  ? (ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`)
+  : defaultOgImage;
 ---
 <html lang="ja">
   <head>
@@ -44,7 +45,8 @@ const ogImageUrl = ogImage || defaultOgImage;
       }}
       twitter={{
         card: 'summary_large_image',
-        site: siteConfig.twitter,
+	image: ogImageUrl,	    
+	site: siteConfig.twitter,
         creator: siteConfig.twitter,
       }}
     />
