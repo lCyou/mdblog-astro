@@ -118,19 +118,6 @@ async function generateOGImage(
                           ],
                         },
                       },
-                      // Description
-                      description && {
-                        type: 'p',
-                        props: {
-                          style: {
-                            fontSize: '28px',
-                            margin: '0',
-                            lineHeight: '1.4',
-                            color: '#605d52', // Medium gray
-                          },
-                          children: description,
-                        },
-                      },
                       // Tags
                       tags.length > 0 && {
                         type: 'div',
