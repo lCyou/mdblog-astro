@@ -24,7 +24,7 @@ const slug = Astro.url.pathname.split('/').filter(Boolean).pop()?.replace('.html
 
 // Satori生成のOG画像URLを構築
 const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
-const ogImage = slug ? `${siteUrl}/og/${slug}.svg` : undefined;
+const ogImage = slug ? `${siteUrl}/og/${slug}.png` : undefined;
 const ogImageAlt = `${frontmatter.title}のOGイメージ`;
 ---
 <BaseLayout 
