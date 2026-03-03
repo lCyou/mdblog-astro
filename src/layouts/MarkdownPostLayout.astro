@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { Icon } from 'astro-icon/components';
+import TableOfContents from '@/components/TableOfContents.astro';
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -13,7 +14,7 @@ const lastModified = dayjs(Astro.props.frontmatter.lastModified)
   .tz("Asia/Tokyo")
   .format("YYYY-MM-DD");
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings } = Astro.props;
 const { minutesRead } = Astro.props.frontmatter;
 
 // SEO用の情報を準備
@@ -53,6 +54,7 @@ const ogImageAlt = `${frontmatter.title}のOGイメージ`;
       ))}
     </div>
   </div>
+  <TableOfContents headings={headings} />
   <slot />
 </BaseLayout>
 
