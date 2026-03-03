@@ -1,0 +1,9 @@
+{
+  // https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+  "config": {
+    "default": true,
+    // Disable line-length rule: not practical for Japanese blog posts
+    "MD013": false
+  },
+  "globs": ["src/**/*.md", "README.md"]
+}
