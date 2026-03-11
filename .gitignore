@@ -26,3 +26,7 @@ pnpm-debug.log*
 
 # vscode setting folder
 .vscode/
+
+# generated OG images
+public/og/*.png
+!public/og-default.png

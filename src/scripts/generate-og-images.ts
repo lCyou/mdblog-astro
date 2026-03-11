@@ -1,38 +1,29 @@
-import type { APIRoute } from 'astro';
-import satori from 'satori';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { glob } from 'glob';
+import satori from 'satori';
+import sharp from 'sharp';
 
-export async function getStaticPaths() {
-  // Get all markdown posts
-  const posts = import.meta.glob('../posts/*.md', { eager: true });
-  
-  return Object.entries(posts).map(([path, post]: [string, any]) => {
-    // Extract slug from file path
-    const slug = path.split('/').pop()?.replace('.md', '') || '';
-    return {
-      params: { slug },
-      props: {
-        title: post.frontmatter?.title || 'lCyouのブログ',
-        description: post.frontmatter?.description || '',
-        pubDate: post.frontmatter?.pubDate,
-        tags: post.frontmatter?.tags || [],
-        author: post.frontmatter?.author || 'unknown',
-      },
-    };
-  });
+interface PostFrontmatter {
+  title?: string;
+  description?: string;
+  pubDate?: string;
+  tags?: string[];
+  author?: string;
 }
 
-export const GET: APIRoute = async ({ props }) => {
-  const { title, description, pubDate, tags, author } = props as {
-    title: string;
-    description: string;
-    pubDate: string;
-    tags: string[];
-    author: string;
-  };
+interface Post {
+  frontmatter?: PostFrontmatter;
+}
 
-  // Format date
+async function generateOGImage(
+  slug: string,
+  title: string,
+  description: string,
+  pubDate: string,
+  tags: string[],
+  author: string
+): Promise<Buffer> {
   const formattedDate = pubDate ? new Date(pubDate).toLocaleDateString('ja-JP') : '';
 
   // Load fonts from node_modules
@@ -127,19 +118,6 @@ export const GET: APIRoute = async ({ props }) => {
                           ],
                         },
                       },
-                      // Description
-                      description && {
-                        type: 'p',
-                        props: {
-                          style: {
-                            fontSize: '28px',
-                            margin: '0',
-                            lineHeight: '1.4',
-                            color: '#605d52', // Medium gray
-                          },
-                          children: description,
-                        },
-                      },
                       // Tags
                       tags.length > 0 && {
                         type: 'div',
@@ -224,10 +202,101 @@ export const GET: APIRoute = async ({ props }) => {
     }
   );
 
-  return new Response(svg, {
-    headers: {
-      'Content-Type': 'image/svg+xml',
-      'Cache-Control': 'public, max-age=31536000, immutable',
-    },
-  });
-};
+  // Convert SVG to PNG using Sharp
+  const pngBuffer = await sharp(Buffer.from(svg))
+    .png()
+    .toBuffer();
+
+  return pngBuffer;
+}
+
+async function main() {
+  console.log('🎨 Generating OG images...\n');
+
+  // Ensure output directory exists
+  const outputDir = join(process.cwd(), 'public/og');
+  mkdirSync(outputDir, { recursive: true });
+
+  // Get all markdown posts
+  const postFiles = await glob('src/pages/posts/*.md');
+  
+  let successCount = 0;
+  let errorCount = 0;
+
+  // Generate OG image for each post
+  for (const postPath of postFiles) {
+    try {
+      const slug = postPath.split('/').pop()?.replace('.md', '') || '';
+      
+      // Read post file to extract frontmatter
+      const fileContent = readFileSync(postPath, 'utf-8');
+      const frontmatterMatch = fileContent.match(/^---\n([\s\S]*?)\n---/);
+      
+      if (!frontmatterMatch) {
+        console.warn(`⚠️  No frontmatter found in ${slug}.md, skipping...`);
+        continue;
+      }
+
+      // Parse frontmatter (simple YAML parsing)
+      const frontmatterText = frontmatterMatch[1];
+      const frontmatter: PostFrontmatter = {};
+      
+      const titleMatch = frontmatterText.match(/^title:\s*['"]?(.+?)['"]?$/m);
+      const descMatch = frontmatterText.match(/^description:\s*['"]?(.+?)['"]?$/m);
+      const authorMatch = frontmatterText.match(/^author:\s*['"]?(.+?)['"]?$/m);
+      const pubDateMatch = frontmatterText.match(/^pubDate:\s*['"]?(.+?)['"]?$/m);
+      const tagsMatch = frontmatterText.match(/^tags:\s*\[(.*?)\]/m);
+
+      frontmatter.title = titleMatch ? titleMatch[1] : 'lCyouのブログ';
+      frontmatter.description = descMatch ? descMatch[1] : '';
+      frontmatter.author = authorMatch ? authorMatch[1] : 'unknown';
+      frontmatter.pubDate = pubDateMatch ? pubDateMatch[1] : '';
+      frontmatter.tags = tagsMatch 
+        ? tagsMatch[1].split(',').map(t => t.trim().replace(/['"]/g, ''))
+        : [];
+
+      const pngBuffer = await generateOGImage(
+        slug,
+        frontmatter.title || 'lCyouのブログ',
+        frontmatter.description || '',
+        frontmatter.pubDate || '',
+        frontmatter.tags || [],
+        frontmatter.author || 'unknown'
+      );
+
+      const outputPath = join(outputDir, `${slug}.png`);
+      writeFileSync(outputPath, pngBuffer);
+
+      console.log(`✅ Generated: ${slug}.png`);
+      successCount++;
+    } catch (error) {
+      console.error(`❌ Error generating OG image for ${postPath}:`, error);
+      errorCount++;
+    }
+  }
+
+  // Generate default OG image
+  try {
+    const defaultPngBuffer = await generateOGImage(
+      'default',
+      'lCyouのブログ',
+      'プログラミングと技術について',
+      '',
+      [],
+      'lCyou'
+    );
+
+    const defaultOutputPath = join(process.cwd(), 'public/og-default.png');
+    writeFileSync(defaultOutputPath, defaultPngBuffer);
+
+    console.log(`✅ Generated: og-default.png`);
+    successCount++;
+  } catch (error) {
+    console.error('❌ Error generating default OG image:', error);
+    errorCount++;
+  }
+
+  console.log(`\n🎉 Done! Generated ${successCount} images (${errorCount} errors)`);
+}
+
+main().catch(console.error);

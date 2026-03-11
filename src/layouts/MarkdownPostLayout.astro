@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { Icon } from 'astro-icon/components';
+import TableOfContents from '@/components/TableOfContents.astro';
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -13,7 +14,7 @@ const lastModified = dayjs(Astro.props.frontmatter.lastModified)
   .tz("Asia/Tokyo")
   .format("YYYY-MM-DD");
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings } = Astro.props;
 const { minutesRead } = Astro.props.frontmatter;
 
 // SEO用の情報を準備
@@ -24,7 +25,7 @@ const slug = Astro.url.pathname.split('/').filter(Boolean).pop()?.replace('.html
 
 // Satori生成のOG画像URLを構築
 const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
-const ogImage = slug ? `${siteUrl}/og/${slug}.svg` : undefined;
+const ogImage = slug ? `${siteUrl}/og/${slug}.png` : undefined;
 const ogImageAlt = `${frontmatter.title}のOGイメージ`;
 ---
 <BaseLayout 
@@ -53,6 +54,7 @@ const ogImageAlt = `${frontmatter.title}のOGイメージ`;
       ))}
     </div>
   </div>
+  <TableOfContents headings={headings} />
   <slot />
 </BaseLayout>
 

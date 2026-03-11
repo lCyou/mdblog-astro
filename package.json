@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "generate:og": "tsx src/scripts/generate-og-images.ts",
+    "build": "npm run generate:og && astro build",
     "post": "node scripts/create-post.js",
     "preview": "npx astro build && npx wrangler dev",
     "astro": "astro"
@@ -29,6 +30,8 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
+    "glob": "^11.0.0",
+    "tsx": "^4.19.2",
     "wrangler": "^4.66.0"
   }
 }
