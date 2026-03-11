@@ -17,13 +17,13 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 4);
   <nav class="toc" aria-label="目次">
     <details id="toc-details" open>
       <summary class="toc-title">目次</summary>
-      <ol class="toc-list">
+      <ul class="toc-list">
         {tocHeadings.map((heading) => (
           <li class={`toc-item toc-depth-${heading.depth}`}>
             <a href={`#${heading.slug}`}>{heading.text}</a>
           </li>
         ))}
-      </ol>
+      </ul>
     </details>
   </nav>
 )}
@@ -61,6 +61,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 4);
   .toc-list {
     margin: 0.75rem 0 0 0;
     padding-left: 1.25rem;
+    list-style: none;
   }
 
   .toc-item {
