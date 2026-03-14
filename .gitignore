@@ -30,3 +30,6 @@ pnpm-debug.log*
 # generated OG images
 public/og/*.png
 !public/og-default.png
+
+# Bluesky posting state (managed by GitHub Actions cache)
+.posted-articles.json
