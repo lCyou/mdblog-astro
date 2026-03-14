@@ -1,0 +1,43 @@
+name: Post to Bluesky
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/pages/posts/**'
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  post-to-bluesky:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Restore posted articles cache
+        uses: actions/cache@v4
+        with:
+          path: .posted-articles.json
+          # Use run_id so a fresh entry is saved each run (cache entries are
+          # immutable). restore-keys ensures we fall back to the latest
+          # existing entry from any prior run.
+          key: bluesky-posted-${{ github.run_id }}
+          restore-keys: |
+            bluesky-posted-
+
+      - name: Post new articles to Bluesky
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+        run: node scripts/post-to-bluesky.js
