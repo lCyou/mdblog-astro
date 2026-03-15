@@ -1,0 +1,49 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+
+const pageTitle = "検索";
+---
+
+<PageLayout pageTitle={pageTitle}>
+  <h1>検索</h1>
+  <div id="search" class="search-container"></div>
+</PageLayout>
+
+<style>
+  .search-container {
+    margin-top: 1rem;
+  }
+</style>
+
+<style is:global>
+  /* Pagefind UI カラーカスタマイズ */
+  :root {
+    --pagefind-ui-scale: 1;
+    --pagefind-ui-primary: var(--color-accent);
+    --pagefind-ui-text: var(--color-text);
+    --pagefind-ui-background: var(--color-card-bg);
+    --pagefind-ui-border: var(--color-border);
+    --pagefind-ui-tag: var(--color-card-bg);
+    --pagefind-ui-border-width: 2px;
+    --pagefind-ui-border-radius: 0.5rem;
+    --pagefind-ui-image-border-radius: 0.5rem;
+    --pagefind-ui-image-box-ratio: 3 / 2;
+    --pagefind-ui-font: inherit;
+  }
+</style>
+
+<script>
+  import { PagefindUI } from '@pagefind/default-ui';
+  import '@pagefind/default-ui/css/ui.css';
+
+  window.addEventListener('DOMContentLoaded', () => {
+    new PagefindUI({
+      element: '#search',
+      showSubResults: true,
+      translations: {
+        placeholder: '記事を検索...',
+        zero_results: '[SEARCH_TERM] の検索結果はありませんでした。',
+      },
+    });
+  });
+</script>
