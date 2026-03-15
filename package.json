@@ -8,7 +8,8 @@
     "build": "npm run generate:og && astro build",
     "post": "node scripts/create-post.js",
     "preview": "npx astro build && npx wrangler dev",
-    "astro": "astro"
+    "astro": "astro",
+    "lint:md": "markdownlint-cli2"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.12",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "glob": "^11.0.0",
+    "markdownlint-cli2": "^0.21.0",
     "tsx": "^4.19.2",
     "wrangler": "^4.66.0"
   }
