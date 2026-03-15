@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "generate:og": "tsx src/scripts/generate-og-images.ts",
-    "build": "npm run generate:og && astro build && pagefind --site dist",
+    "build": "npm run generate:og && astro build && pagefind --site dist --glob \"posts/**/*.{html}\"",
     "post": "node scripts/create-post.js",
     "preview": "npx astro build && npx wrangler dev",
     "astro": "astro"
