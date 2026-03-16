@@ -35,6 +35,8 @@ const ogImageAlt = `${frontmatter.title}のOGイメージ`;
   ogImageAlt={ogImageAlt}
   article={true}
 >
+  {ogImage && <meta slot="head" data-pagefind-meta="image[content]" content={ogImage} />}
+  <article data-pagefind-body>
   <div class="post-header">
     <h1 class="title">{frontmatter.title}</h1>
     <div class="meta">
@@ -56,6 +58,7 @@ const ogImageAlt = `${frontmatter.title}のOGイメージ`;
   </div>
   <TableOfContents headings={headings} />
   <slot />
+  </article>
 </BaseLayout>
 
 <style>

@@ -30,6 +30,13 @@ const pageTitle = "検索";
     --pagefind-ui-image-box-ratio: 3 / 2;
     --pagefind-ui-font: inherit;
   }
+
+  .pagefind-ui mark {
+    background-color: var(--color-accent);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 2px;
+  }
 </style>
 
 <script>
@@ -39,7 +46,7 @@ const pageTitle = "検索";
   window.addEventListener('DOMContentLoaded', () => {
     new PagefindUI({
       element: '#search',
-      showSubResults: true,
+      showSubResults: false,
       translations: {
         placeholder: '記事を検索...',
         zero_results: '[SEARCH_TERM] の検索結果はありませんでした。',
