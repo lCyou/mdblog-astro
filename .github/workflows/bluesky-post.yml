@@ -1,0 +1,47 @@
+name: Post new articles to Bluesky
+
+on:
+  schedule:
+    # Runs every hour
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      max_articles:
+        description: 'Maximum number of recent feed items to check for new posts'
+        required: false
+        default: '10'
+
+permissions:
+  contents: write
+
+jobs:
+  post-to-bluesky:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Post new articles to Bluesky
+        id: post
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
+          RSS_URL: 'https://blog.lcyou.me/rss.xml'
+          STATE_FILE: '.github/bluesky-posted.json'
+          MAX_ARTICLES: ${{ inputs.max_articles || '10' }}
+        run: node .github/scripts/post-to-bluesky.js
+
+      - name: Commit updated state file
+        if: steps.post.conclusion == 'success' && steps.post.outputs.posted_count != '0'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .github/bluesky-posted.json
+          git diff --staged --quiet || git commit -m 'chore: update Bluesky posted articles state [skip ci]'
+          git push
