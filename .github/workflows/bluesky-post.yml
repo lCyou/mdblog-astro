@@ -6,10 +6,9 @@ on:
     paths:
       - 'src/pages/posts/*.md'
   workflow_dispatch:
-    inputs:
-      post_file:
-        description: 'Path to the post file to share (e.g. src/pages/posts/my-post.md)'
-        required: true
+
+concurrency:
+  group: feedbot
 
 permissions:
   contents: read
@@ -19,42 +18,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Generate cache key
+        uses: actions/github-script@v6
+        id: generate-key
         with:
-          fetch-depth: 2
+          script: |
+            core.setOutput('cache-key', new Date().valueOf())
 
-      - name: Detect new post files
-        id: detect
-        env:
-          BEFORE: ${{ github.event.before }}
-          AFTER: ${{ github.sha }}
-          INPUT_FILE: ${{ inputs.post_file }}
-        run: |
-          if [ -n "$INPUT_FILE" ]; then
-            echo "files=$INPUT_FILE" >> "$GITHUB_OUTPUT"
-          elif [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-            echo "files=" >> "$GITHUB_OUTPUT"
-          else
-            NEW_FILES=$(git diff --diff-filter=A --name-only HEAD~1 HEAD -- 'src/pages/posts/*.md' | tr '\n' ' ')
-            echo "files=$NEW_FILES" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Retrieve cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/blueskyfeedbot
+          key: feed-cache-${{ steps.generate-key.outputs.cache-key }}
+          restore-keys: feed-cache-
 
       - name: Wait for blog build to complete
-        if: steps.detect.outputs.files != ''
         run: sleep 300
 
-      - name: Set up Node.js
-        if: steps.detect.outputs.files != ''
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Post new articles to Bluesky
-        if: steps.detect.outputs.files != ''
-        env:
-          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
-          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
-          POST_FILES: ${{ steps.detect.outputs.files }}
-          BLOG_BASE_URL: 'https://blog.lcyou.me'
-        run: node .github/scripts/post-to-bluesky.js
+        uses: joschi/blueskyfeedbot@v1
+        with:
+          rss-feed: 'https://blog.lcyou.me/rss.xml'
+          template: |
+            📝 {{item.title}}
+
+            {{item.link}}
+          username: ${{ secrets.BLUESKY_HANDLE }}
+          password: ${{ secrets.BLUESKY_PASSWORD }}
+          cache-file: ${{ github.workspace }}/blueskyfeedbot/cache.json
+          initial-post-limit: 1
