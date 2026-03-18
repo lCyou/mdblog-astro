@@ -1,18 +1,18 @@
 name: Post new articles to Bluesky
 
 on:
-  schedule:
-    # Runs every hour
-    - cron: '0 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'src/pages/posts/*.md'
   workflow_dispatch:
     inputs:
-      max_articles:
-        description: 'Maximum number of recent feed items to check for new posts'
-        required: false
-        default: '10'
+      post_file:
+        description: 'Path to the post file to share (e.g. src/pages/posts/my-post.md)'
+        required: true
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   post-to-bluesky:
@@ -21,27 +21,40 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect new post files
+        id: detect
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          INPUT_FILE: ${{ inputs.post_file }}
+        run: |
+          if [ -n "$INPUT_FILE" ]; then
+            echo "files=$INPUT_FILE" >> "$GITHUB_OUTPUT"
+          elif [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "files=" >> "$GITHUB_OUTPUT"
+          else
+            NEW_FILES=$(git diff --diff-filter=A --name-only HEAD~1 HEAD -- 'src/pages/posts/*.md' | tr '\n' ' ')
+            echo "files=$NEW_FILES" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Wait for blog build to complete
+        if: steps.detect.outputs.files != ''
+        run: sleep 300
 
       - name: Set up Node.js
+        if: steps.detect.outputs.files != ''
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       - name: Post new articles to Bluesky
-        id: post
+        if: steps.detect.outputs.files != ''
         env:
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
           BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
-          RSS_URL: 'https://blog.lcyou.me/rss.xml'
-          STATE_FILE: '.github/bluesky-posted.json'
-          MAX_ARTICLES: ${{ inputs.max_articles || '10' }}
+          POST_FILES: ${{ steps.detect.outputs.files }}
+          BLOG_BASE_URL: 'https://blog.lcyou.me'
         run: node .github/scripts/post-to-bluesky.js
-
-      - name: Commit updated state file
-        if: steps.post.conclusion == 'success' && steps.post.outputs.posted_count != '0'
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .github/bluesky-posted.json
-          git diff --staged --quiet || git commit -m 'chore: update Bluesky posted articles state [skip ci]'
-          git push

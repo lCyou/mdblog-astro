@@ -4,9 +4,8 @@
  * Environment variables (all required unless noted):
  *   BLUESKY_HANDLE   - Bluesky username/handle (e.g. user.bsky.social)
  *   BLUESKY_PASSWORD - Bluesky app password
- *   RSS_URL          - Full URL of the blog RSS feed (optional, has default)
- *   STATE_FILE       - Path to the JSON state file (optional, has default)
- *   MAX_ARTICLES     - How many recent feed items to check (optional, default 10)
+ *   POST_FILES       - Space-separated list of new post file paths to share
+ *   BLOG_BASE_URL    - Blog base URL (optional, default: https://blog.lcyou.me)
  */
 
 'use strict';
@@ -15,45 +14,12 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const RSS_URL = process.env.RSS_URL || 'https://blog.lcyou.me/rss.xml';
-const STATE_FILE = process.env.STATE_FILE || '.github/bluesky-posted.json';
-const MAX_ARTICLES = parseInt(process.env.MAX_ARTICLES || '10', 10);
-const BLUESKY_HANDLE = process.env.BLUESKY_HANDLE;
+const BLUESKY_HANDLE  = process.env.BLUESKY_HANDLE;
 const BLUESKY_PASSWORD = process.env.BLUESKY_PASSWORD;
+const POST_FILES      = (process.env.POST_FILES || '').trim().split(/\s+/).filter(Boolean);
+const BLOG_BASE_URL   = (process.env.BLOG_BASE_URL || 'https://blog.lcyou.me').replace(/\/$/, '');
 
-// ── GitHub Actions output helper ─────────────────────────────────────────────
-
-function setOutput(name, value) {
-  const outputFile = process.env.GITHUB_OUTPUT;
-  if (outputFile) {
-    fs.appendFileSync(outputFile, `${name}=${value}\n`);
-  }
-}
-
-// ── HTTP helpers ──────────────────────────────────────────────────────────────
-
-function fetchUrl(url) {
-  return new Promise((resolve, reject) => {
-    const req = https.get(url, { timeout: 30000 }, (res) => {
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        // Follow one redirect
-        resolve(fetchUrl(res.headers.location));
-        return;
-      }
-      let data = '';
-      res.on('data', (chunk) => { data += chunk; });
-      res.on('end', () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(data);
-        } else {
-          reject(new Error(`HTTP ${res.statusCode} fetching ${url}`));
-        }
-      });
-    });
-    req.on('error', reject);
-    req.on('timeout', () => { req.destroy(); reject(new Error(`Timeout fetching ${url}`)); });
-  });
-}
+// ── HTTP helper ───────────────────────────────────────────────────────────────
 
 function postJSON(hostname, urlPath, body, headers) {
   return new Promise((resolve, reject) => {
@@ -91,56 +57,38 @@ function postJSON(hostname, urlPath, body, headers) {
   });
 }
 
-// ── RSS parsing ───────────────────────────────────────────────────────────────
+// ── Frontmatter parsing ───────────────────────────────────────────────────────
 
-function extractTag(xml, tag) {
-  // Match CDATA-wrapped content first, then plain text
-  const cdataRe = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>`, 'i');
-  const plainRe  = new RegExp(`<${tag}[^>]*>([^<]*)<\\/${tag}>`, 'i');
+/**
+ * Parse YAML frontmatter from a markdown file.
+ * Handles simple scalar values and quoted strings.
+ * Returns an object with the frontmatter fields.
+ */
+function parseFrontmatter(content) {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!match) return {};
 
-  const cdata = xml.match(cdataRe);
-  if (cdata) return cdata[1].trim();
-
-  const plain = xml.match(plainRe);
-  if (plain) return plain[1].trim();
-
-  return '';
-}
-
-function parseRSSItems(xml) {
-  const items = [];
-  const itemRe = /<item>([\s\S]*?)<\/item>/g;
-  let m;
-  while ((m = itemRe.exec(xml)) !== null) {
-    const chunk = m[1];
-    const title       = extractTag(chunk, 'title');
-    const link        = extractTag(chunk, 'link') || extractTag(chunk, 'guid');
-    const description = extractTag(chunk, 'description');
-    const pubDate     = extractTag(chunk, 'pubDate');
-    if (title && link) {
-      items.push({ title, link, description, pubDate });
+  const fm = {};
+  for (const line of match[1].split(/\r?\n/)) {
+    // Match "key: value" lines (value may be empty); skip block/array fields
+    const m = line.match(/^(\w+):\s*(.*)$/);
+    if (!m) continue;
+    // Strip surrounding matching quotes if present
+    const val = m[2].trim();
+    if (val.length >= 2 &&
+        ((val.startsWith("'") && val.endsWith("'")) ||
+         (val.startsWith('"') && val.endsWith('"')))) {
+      fm[m[1]] = val.slice(1, -1);
+    } else {
+      fm[m[1]] = val;
     }
   }
-  return items;
+  return fm;
 }
 
-// ── State management ──────────────────────────────────────────────────────────
-
-function loadState() {
-  try {
-    if (fs.existsSync(STATE_FILE)) {
-      const data = JSON.parse(fs.readFileSync(STATE_FILE, 'utf-8'));
-      if (Array.isArray(data.posted)) return data;
-    }
-  } catch (e) {
-    console.warn(`Could not read state file (${e.message}), starting fresh.`);
-  }
-  return { posted: [] };
-}
-
-function saveState(state) {
-  fs.mkdirSync(path.dirname(path.resolve(STATE_FILE)), { recursive: true });
-  fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2) + '\n');
+function fileToUrl(filePath) {
+  const basename = path.basename(filePath, '.md');
+  return `${BLOG_BASE_URL}/posts/${basename}`;
 }
 
 // ── Post text builder ─────────────────────────────────────────────────────────
@@ -167,25 +115,12 @@ function truncateByBytes(str, maxBytes) {
   return result + ellipsis;
 }
 
-function decodeHtmlEntities(str) {
-  const map = {
-    '&amp;':  '&',
-    '&lt;':   '<',
-    '&gt;':   '>',
-    '&quot;': '"',
-    '&#39;':  "'",
-    '&nbsp;': ' ',
-  };
-  // Single-pass replacement avoids chained double-decoding (e.g. &amp;lt; → &lt; → <)
-  return str.replace(/&(?:amp|lt|gt|quot|#39|nbsp);/g, (m) => map[m] ?? m);
-}
-
 /**
  * Build the post text and rich-text facets for a Bluesky post.
  * Format:
  *   📝 {title}
  *
- *   {description, if available and fits within 300 chars}
+ *   {description, if available and fits within 300 bytes}
  *
  *   {link}
  *
@@ -198,12 +133,7 @@ function buildPost(article) {
   let text = `📝 ${article.title}\n\n`;
 
   if (article.description) {
-    // Strip HTML tags, then neutralize any residual angle brackets so the
-    // resulting plain text is safe to embed in a Bluesky post (non-HTML context).
-    const clean = decodeHtmlEntities(
-      article.description.replace(/<[^>]*>/g, ' ').replace(/[<>]/g, ' ')
-    ).replace(/\s+/g, ' ').trim();
-
+    const clean = article.description.replace(/\s+/g, ' ').trim();
     if (clean) {
       // Budget: total limit minus header bytes minus link bytes minus 2 bytes
       // for the '\n\n' separator that follows the excerpt.
@@ -244,7 +174,7 @@ async function createPost(session, article) {
   const { text, facets } = buildPost(article);
 
   console.log(`Posting: ${article.title}`);
-  console.log(`  ${text.length} chars | link facet [${facets[0].index.byteStart}-${facets[0].index.byteEnd}]`);
+  console.log(`  ${Buffer.byteLength(text)} bytes | link facet [${facets[0].index.byteStart}-${facets[0].index.byteEnd}]`);
 
   await postJSON(
     'bsky.social',
@@ -273,43 +203,52 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`Fetching RSS feed: ${RSS_URL}`);
-  const xml   = await fetchUrl(RSS_URL);
-  const items = parseRSSItems(xml);
-  console.log(`Feed contains ${items.length} item(s); checking up to ${MAX_ARTICLES}.`);
-
-  const recent     = items.slice(0, MAX_ARTICLES);
-  const state      = loadState();
-  const newArticles = recent.filter((a) => !state.posted.includes(a.link));
-
-  if (newArticles.length === 0) {
-    console.log('No new articles to post.');
-    setOutput('posted_count', '0');
+  if (POST_FILES.length === 0) {
+    console.log('No post files specified.');
     return;
   }
 
-  console.log(`${newArticles.length} new article(s) to post.`);
+  console.log(`Processing ${POST_FILES.length} file(s): ${POST_FILES.join(', ')}`);
 
-  const session     = await authenticate();
-  let   postedCount = 0;
+  const articles = [];
+  for (const filePath of POST_FILES) {
+    if (!fs.existsSync(filePath)) {
+      console.warn(`File not found: ${filePath}`);
+      continue;
+    }
 
-  // Post oldest-first so the timeline reads in order
-  for (const article of [...newArticles].reverse()) {
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const fm      = parseFrontmatter(content);
+
+    if (!fm.title) {
+      console.warn(`No title found in frontmatter: ${filePath}`);
+      continue;
+    }
+
+    articles.push({
+      title:       fm.title,
+      description: fm.description || '',
+      link:        fileToUrl(filePath),
+    });
+  }
+
+  if (articles.length === 0) {
+    console.log('No valid articles to post.');
+    return;
+  }
+
+  const session = await authenticate();
+
+  for (let i = 0; i < articles.length; i++) {
     try {
-      await createPost(session, article);
-      state.posted.push(article.link);
-      postedCount++;
-      if (postedCount < newArticles.length) {
+      await createPost(session, articles[i]);
+      if (i < articles.length - 1) {
         await new Promise((r) => setTimeout(r, 1000));
       }
     } catch (e) {
-      console.error(`  ✗ Failed to post "${article.title}": ${e.message}`);
+      console.error(`  ✗ Failed to post "${articles[i].title}": ${e.message}`);
     }
   }
-
-  saveState(state);
-  console.log(`\nPosted ${postedCount}/${newArticles.length} article(s) to Bluesky.`);
-  setOutput('posted_count', String(postedCount));
 }
 
 main().catch((e) => {
