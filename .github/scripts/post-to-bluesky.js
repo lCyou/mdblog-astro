@@ -168,13 +168,16 @@ function truncateByBytes(str, maxBytes) {
 }
 
 function decodeHtmlEntities(str) {
-  return str
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ');
+  const map = {
+    '&amp;':  '&',
+    '&lt;':   '<',
+    '&gt;':   '>',
+    '&quot;': '"',
+    '&#39;':  "'",
+    '&nbsp;': ' ',
+  };
+  // Single-pass replacement avoids chained double-decoding (e.g. &amp;lt; → &lt; → <)
+  return str.replace(/&(?:amp|lt|gt|quot|#39|nbsp);/g, (m) => map[m] ?? m);
 }
 
 /**
@@ -195,8 +198,10 @@ function buildPost(article) {
   let text = `📝 ${article.title}\n\n`;
 
   if (article.description) {
+    // Strip HTML tags, then neutralize any residual angle brackets so the
+    // resulting plain text is safe to embed in a Bluesky post (non-HTML context).
     const clean = decodeHtmlEntities(
-      article.description.replace(/<[^>]+>/g, '')
+      article.description.replace(/<[^>]*>/g, ' ').replace(/[<>]/g, ' ')
     ).replace(/\s+/g, ' ').trim();
 
     if (clean) {
