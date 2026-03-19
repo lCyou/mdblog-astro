@@ -1,0 +1,49 @@
+name: Post new articles to Bluesky
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/pages/posts/*.md'
+  workflow_dispatch:
+
+concurrency:
+  group: feedbot
+
+permissions:
+  contents: read
+
+jobs:
+  post-to-bluesky:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate cache key
+        uses: actions/github-script@v6
+        id: generate-key
+        with:
+          script: |
+            core.setOutput('cache-key', new Date().valueOf())
+
+      - name: Retrieve cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/blueskyfeedbot
+          key: feed-cache-${{ steps.generate-key.outputs.cache-key }}
+          restore-keys: feed-cache-
+
+      - name: Wait for blog build to complete
+        run: sleep 300
+
+      - name: Post new articles to Bluesky
+        uses: joschi/blueskyfeedbot@v1
+        with:
+          rss-feed: 'https://blog.lcyou.me/rss.xml'
+          template: |
+            📝 {{item.title}}
+
+            {{item.link}}
+          username: ${{ secrets.BLUESKY_HANDLE }}
+          password: ${{ secrets.BLUESKY_PASSWORD }}
+          cache-file: ${{ github.workspace }}/blueskyfeedbot/cache.json
+          initial-post-limit: 1
