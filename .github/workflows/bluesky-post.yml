@@ -38,8 +38,8 @@ jobs:
           rss-feed: 'https://blog.lcyou.me/rss.xml'
           template: |
             📝 {{item.title}}
-
-            {{item.link}}
+            {{item.link}} 
+            
           username: ${{ secrets.BLUESKY_HANDLE }}
           password: ${{ secrets.BLUESKY_PASSWORD }}
           cache-file: ${{ github.workspace }}/blueskyfeedbot/cache.json
