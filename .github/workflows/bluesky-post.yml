@@ -10,9 +10,6 @@ on:
 concurrency:
   group: feedbot
 
-permissions:
-  contents: read
-
 jobs:
   post-to-bluesky:
     runs-on: ubuntu-latest
@@ -32,8 +29,8 @@ jobs:
           key: feed-cache-${{ steps.generate-key.outputs.cache-key }}
           restore-keys: feed-cache-
 
-      - name: Wait for blog build to complete
-        run: sleep 300
+      # - name: Wait for blog build to complete
+      #   run: sleep 300
 
       - name: Post new articles to Bluesky
         uses: joschi/blueskyfeedbot@v1
