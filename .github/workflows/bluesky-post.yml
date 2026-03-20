@@ -43,4 +43,4 @@ jobs:
           username: ${{ secrets.BLUESKY_HANDLE }}
           password: ${{ secrets.BLUESKY_PASSWORD }}
           cache-file: ${{ github.workspace }}/blueskyfeedbot/cache.json
-          initial-post-limit: 1
+          initial-post-limit: 5
