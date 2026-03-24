@@ -37,8 +37,9 @@ jobs:
         with:
           rss-feed: 'https://blog.lcyou.me/rss.xml'
           template: |
+            {{item.link}}
+            
             📝 {{item.title}}
-            {{item.link}} 
             
           username: ${{ secrets.BLUESKY_HANDLE }}
           password: ${{ secrets.BLUESKY_PASSWORD }}
