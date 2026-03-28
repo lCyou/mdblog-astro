@@ -2,6 +2,7 @@ import careerData from '@/data/career.json';
 import { greetingArt } from '@/data/greetings';
 import { fetchGitHubActivity, formatGitHubEvent, generateCommitHash } from '@/utils/github';
 import { useEffect, useRef } from 'preact/hooks';
+import '@xterm/xterm/css/xterm.css';
 
 interface TerminalProps {}
 
@@ -326,7 +327,6 @@ export default function Terminal({}: TerminalProps) {
         const xtermModule = await import('@xterm/xterm');
         const fitAddonModule = await import('@xterm/addon-fit');
         const webLinksAddonModule = await import('@xterm/addon-web-links');
-        await import('@xterm/xterm/css/xterm.css');
 
         if (cleanup) return;
 
