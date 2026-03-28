@@ -28,6 +28,32 @@ export interface GitHubActivityResult {
 }
 
 /**
+ * ANSI色コードユーティリティ
+ */
+const ANSI = {
+  reset: '\x1b[0m',
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  magenta: '\x1b[35m',
+  cyan: '\x1b[36m',
+  gray: '\x1b[90m',
+  brightGreen: '\x1b[92m',
+  brightYellow: '\x1b[93m',
+  brightBlue: '\x1b[94m',
+  brightMagenta: '\x1b[95m',
+  brightCyan: '\x1b[96m',
+  white: '\x1b[97m',
+};
+
+/**
+ * 色付きテキストを生成するヘルパー
+ */
+const colorize = (text: string, color: string) => `${color}${text}${ANSI.reset}`;
+
+
+/**
  * GitHubの公開アクティビティを取得
  * @param username GitHubユーザー名
  * @returns アクティビティ取得結果
@@ -95,40 +121,40 @@ export function formatGitHubEvent(event: GitHubEvent): string[] {
   const commitHash = generateCommitHash(event.id);
   const date = new Date(event.created_at).toISOString().split('T')[0];
   
-  lines.push(`commit ${commitHash}`);
-  lines.push(`Date:   ${date}`);
+  lines.push(`${colorize('commit', ANSI.yellow)} ${colorize(commitHash, ANSI.brightYellow)}`);
+  lines.push(`${colorize('Date:', ANSI.blue)}   ${colorize(date, ANSI.white)}`);
   lines.push('');
 
   switch (event.type) {
     case 'PushEvent':
       const commitCount = event.payload.commits?.length || 0;
-      lines.push(`    [PushEvent] ${event.repo.name}`);
-      lines.push(`    ${event.payload.ref || 'refs/heads/main'} – ${commitCount} commit(s)`);
+      lines.push(`    ${colorize('[PushEvent]', ANSI.brightGreen)} ${colorize(event.repo.name, ANSI.cyan)}`);
+      lines.push(`    ${colorize(event.payload.ref || 'refs/heads/main', ANSI.gray)} – ${colorize(`${commitCount} commit(s)`, ANSI.white)}`);
       break;
     
     case 'PullRequestEvent':
       const action = event.payload.action || 'opened';
       const prTitle = event.payload.pull_request?.title || 'Pull Request';
-      lines.push(`    [PullRequestEvent] ${event.repo.name}`);
-      lines.push(`    ${action}: "${prTitle}"`);
+      lines.push(`    ${colorize('[PullRequestEvent]', ANSI.brightMagenta)} ${colorize(event.repo.name, ANSI.cyan)}`);
+      lines.push(`    ${colorize(action, ANSI.yellow)}: "${colorize(prTitle, ANSI.white)}"`);
       break;
     
     case 'IssuesEvent':
       const issueAction = event.payload.action || 'opened';
       const issueTitle = event.payload.issue?.title || 'Issue';
-      lines.push(`    [IssuesEvent] ${event.repo.name}`);
-      lines.push(`    ${issueAction}: "${issueTitle}"`);
+      lines.push(`    ${colorize('[IssuesEvent]', ANSI.brightBlue)} ${colorize(event.repo.name, ANSI.cyan)}`);
+      lines.push(`    ${colorize(issueAction, ANSI.yellow)}: "${colorize(issueTitle, ANSI.white)}"`);
       break;
     
     case 'CreateEvent':
       const refType = event.payload.ref_type || 'branch';
       const ref = event.payload.ref || 'main';
-      lines.push(`    [CreateEvent] ${event.repo.name}`);
-      lines.push(`    created ${refType}: ${ref}`);
+      lines.push(`    ${colorize('[CreateEvent]', ANSI.brightCyan)} ${colorize(event.repo.name, ANSI.cyan)}`);
+      lines.push(`    ${colorize('created', ANSI.green)} ${colorize(refType, ANSI.yellow)}: ${colorize(ref, ANSI.white)}`);
       break;
     
     default:
-      lines.push(`    [${event.type}] ${event.repo.name}`);
+      lines.push(`    ${colorize(`[${event.type}]`, ANSI.gray)} ${colorize(event.repo.name, ANSI.cyan)}`);
   }
   
   lines.push('');
