@@ -1,5 +1,4 @@
 {
-	"main": "dist/_worker.js/index.js",
 	"name": "mdblog-astro",
   "compatibility_date": "2026-02-07",
   "compatibility_flags": [
@@ -8,7 +7,7 @@
   ],
 	"assets": {
 		"binding": "ASSETS",
-		"directory": "./dist"
+		"directory": "./dist/client"
 	},
 	"observability": {
     "enabled": true
