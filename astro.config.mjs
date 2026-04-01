@@ -19,6 +19,7 @@ export default defineConfig({
   },
 
   site: "https://blog.lcyou.me",
+  trailingSlash: "never",
   integrations: [icon(), preact(), sitemap()],
 
   vite: {
