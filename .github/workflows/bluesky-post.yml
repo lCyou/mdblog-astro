@@ -28,18 +28,12 @@ jobs:
         with:
           version: 10
 
-      - name: Generate cache key
-        uses: actions/github-script@v8
-        id: generate-key
-        with:
-          script: |
-            core.setOutput('cache-key', new Date().valueOf())
-
-      - name: Retrieve cache
-        uses: actions/cache@v5
+      - name: Restore cache
+        id: cache-restore
+        uses: actions/cache/restore@v5
         with:
           path: ${{ github.workspace }}/blueskyfeedbot
-          key: feed-cache-${{ steps.generate-key.outputs.cache-key }}
+          key: feed-cache-${{ github.run_id }}
           restore-keys: feed-cache-
 
       - name: Install dependencies
@@ -53,3 +47,10 @@ jobs:
           CACHE_FILE: ${{ github.workspace }}/blueskyfeedbot/cache.json
           INITIAL_POST_LIMIT: 5
         run: pnpm exec tsx scripts/post2bsky/main.ts
+
+      - name: Save cache
+        if: always()
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ github.workspace }}/blueskyfeedbot
+          key: feed-cache-${{ github.run_id }}
