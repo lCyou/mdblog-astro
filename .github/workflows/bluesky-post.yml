@@ -52,4 +52,4 @@ jobs:
           BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
           CACHE_FILE: ${{ github.workspace }}/blueskyfeedbot/cache.json
           INITIAL_POST_LIMIT: 5
-        run: tsx scripts/post2bsky/main.ts
+        run: pnpm exec tsx scripts/post2bsky/main.ts
