@@ -15,6 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Generate cache key
         uses: actions/github-script@v8
         id: generate-key
@@ -29,19 +42,14 @@ jobs:
           key: feed-cache-${{ steps.generate-key.outputs.cache-key }}
           restore-keys: feed-cache-
 
-      # - name: Wait for blog build to complete
-      #   run: sleep 300
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Post new articles to Bluesky
-        uses: joschi/blueskyfeedbot@v1
-        with:
-          rss-feed: 'https://blog.lcyou.me/rss.xml'
-          template: |
-            {{item.link}}
-            
-            📝 {{item.title}}
-            
-          username: ${{ secrets.BLUESKY_HANDLE }}
-          password: ${{ secrets.BLUESKY_PASSWORD }}
-          cache-file: ${{ github.workspace }}/blueskyfeedbot/cache.json
-          initial-post-limit: 5
+        env:
+          RSS_FEED_URL: 'https://blog.lcyou.me/rss.xml'
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}
+          CACHE_FILE: ${{ github.workspace }}/blueskyfeedbot/cache.json
+          INITIAL_POST_LIMIT: 5
+        run: pnpm exec tsx scripts/post2bsky/main.ts
