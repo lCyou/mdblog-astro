@@ -45,10 +45,14 @@ jobs:
             STATUS="⚠️ Vulnerabilities detected."
           fi
 
-          gh pr comment "$PR_NUMBER" --body "## pnpm audit
+          {
+            echo "## pnpm audit"
+            echo ""
+            echo "$STATUS"
+            echo ""
+            echo '```'
+            echo "$AUDIT_RESULT"
+            echo '```'
+          } > /tmp/audit-body.md
 
-${STATUS}
-
-\`\`\`
-${AUDIT_RESULT}
-\`\`\`"
+          gh pr comment "$PR_NUMBER" --body-file /tmp/audit-body.md
