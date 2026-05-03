@@ -462,11 +462,13 @@ export default function Terminal({}: TerminalProps) {
             }
           };
           window.addEventListener('resize', handleResize);
+          window.visualViewport?.addEventListener('resize', handleResize);
 
           // クリーンアップ関数を設定
           return () => {
             cleanup = true;
             window.removeEventListener('resize', handleResize);
+            window.visualViewport?.removeEventListener('resize', handleResize);
             if (term) {
               term.dispose();
             }
