@@ -34,10 +34,26 @@ const pageTitle = "Home";
 	
 	@media (max-width: 768px) {
 		.terminal-container {
-			width: 95vw;
-			height: 85vh;
+			top: 0;
+			left: 0;
+			transform: none;
+			width: 100%;
+			height: 100svh;
+			border-radius: 0;
 			padding: 0.5rem;
-			margin-bottom: 5rem;
 		}
 	}
 </style>
+
+<script>
+	if (window.visualViewport) {
+		const container = document.querySelector('.terminal-container') as HTMLElement | null;
+		const update = () => {
+			if (!container || !window.visualViewport) return;
+			container.style.top = window.visualViewport.offsetTop + 'px';
+			container.style.height = window.visualViewport.height + 'px';
+		};
+		window.visualViewport.addEventListener('resize', update);
+		window.visualViewport.addEventListener('scroll', update);
+	}
+</script>
