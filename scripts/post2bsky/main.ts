@@ -46,6 +46,17 @@ async function fetchRSSFeed(url: string): Promise<RSSItem[]> {
 }
 
 /**
+ * RSSアイテムを公開日時の降順（新しい順）にソートする
+ */
+function sortByDateDesc(items: RSSItem[]): RSSItem[] {
+  return [...items].sort((a, b) => {
+    const dateA = a.pubDate ? new Date(a.pubDate).getTime() : 0;
+    const dateB = b.pubDate ? new Date(b.pubDate).getTime() : 0;
+    return dateB - dateA;
+  });
+}
+
+/**
  * 未投稿の記事をフィルタリングする
  */
 function filterNewItems(
@@ -56,24 +67,30 @@ function filterNewItems(
     if (!item.link) return false;
     return !cacheManager.isPosted(item.link);
   });
-  
+
   console.log(`✓ Found ${newItems.length} new items to post`);
   return newItems;
 }
 
 /**
- * 初回実行時の投稿数制限を適用する
+ * 初回実行時に既存記事をキャッシュに登録してスパムを防ぐ
+ * 最新N件のみ投稿対象として返し、残りは投稿済みとしてマークする
  */
-function limitItemsForFirstRun(
-  items: RSSItem[],
-  isFirstRun: boolean,
-  limit: number
+function handleFirstRun(
+  allItems: RSSItem[],
+  limit: number,
+  cacheManager: CacheManager
 ): RSSItem[] {
-  if (isFirstRun && items.length > limit) {
-    console.log(`⚠ First run: limiting to ${limit} posts`);
-    return items.slice(0, limit);
+  if (allItems.length <= limit) {
+    return allItems;
   }
-  return items;
+  console.log(`⚠ First run: posting ${limit} most recent articles, marking rest as already posted`);
+  const toPost = allItems.slice(0, limit);
+  const toSkip = allItems.slice(limit);
+  for (const item of toSkip) {
+    if (item.link) cacheManager.addPostedUrl(item.link);
+  }
+  return toPost;
 }
 
 /**
@@ -129,72 +146,78 @@ async function main(): Promise<void> {
   console.log('='.repeat(60));
   console.log('🚀 Bluesky RSS Feed Bot');
   console.log('='.repeat(60));
-  
+
+  let cacheManager: CacheManager | undefined;
+
   try {
     // 環境変数の検証
     validateConfig();
-    
+
     // 各クラスの初期化
-    const cacheManager = new CacheManager(config.cacheFile);
+    cacheManager = new CacheManager(config.cacheFile);
     const ogpFetcher = new OGPFetcher();
     const bskyClient = await BskyClient.create(
       config.blueskyHandle!,
       config.blueskyPassword!
     );
-    
-    // RSSフィードを取得
+
+    // RSSフィードを取得して新しい順にソート
     const feedItems = await fetchRSSFeed(config.rssFeedUrl);
-    
+    const sortedItems = sortByDateDesc(feedItems);
+
+    // 初回実行時は既存記事をキャッシュに登録し、最新N件のみ投稿対象にする
+    const isFirstRun = cacheManager.isFirstRun();
+    const itemsToConsider = isFirstRun
+      ? handleFirstRun(sortedItems, config.initialPostLimit, cacheManager)
+      : sortedItems;
+
     // 未投稿の記事をフィルタリング
-    let newItems = filterNewItems(feedItems, cacheManager);
-    
+    const newItems = filterNewItems(itemsToConsider, cacheManager);
+
     if (newItems.length === 0) {
       console.log('\n✓ No new items to post. Exiting.');
       return;
     }
-    
-    // 初回実行時は投稿数を制限
-    const isFirstRun = cacheManager.isFirstRun();
-    newItems = limitItemsForFirstRun(
-      newItems,
-      isFirstRun,
-      config.initialPostLimit
-    );
-    
+
     console.log(`\n📮 Posting ${newItems.length} items...`);
-    
-    // 各記事を投稿（エラーが発生したら即座に中断）
+
+    // 各記事を投稿
     for (let i = 0; i < newItems.length; i++) {
       const item = newItems[i];
-      
+
       console.log(`\n[${i + 1}/${newItems.length}]`);
-      
-      // 投稿処理（エラーが発生したらthrowされる）
+
       await postItem(item, bskyClient, ogpFetcher, cacheManager);
-      
+
       // レート制限対策: 2秒待機（最後の投稿以外）
       if (i < newItems.length - 1) {
         console.log('  Waiting 2 seconds to avoid rate limiting...');
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
     }
-    
-    // キャッシュを保存
-    console.log('\n💾 Saving cache...');
-    cacheManager.saveCache();
-    
+
     console.log('\n' + '='.repeat(60));
     console.log('✅ All posts completed successfully!');
     console.log('='.repeat(60));
-    
-  } catch (error) {
-    console.error('\n' + '='.repeat(60));
-    console.error('❌ Error occurred:');
-    console.error(error);
-    console.error('='.repeat(60));
-    process.exit(1);
+
+  } finally {
+    // エラー発生時も含め、必ずキャッシュを保存する
+    if (cacheManager) {
+      try {
+        console.log('\n💾 Saving cache...');
+        cacheManager.saveCache();
+      } catch (e) {
+        console.error('Failed to save cache:', e);
+      }
+    }
   }
 }
 
 // メイン処理を実行
-main();
+main().catch(error => {
+  console.error('\n' + '='.repeat(60));
+  console.error('❌ Error occurred:');
+  console.error(error);
+  console.error('='.repeat(60));
+  process.exit(1);
+});
