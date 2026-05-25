@@ -1,10 +1,8 @@
 name: Post new articles to Bluesky
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'src/pages/posts/*.md'
+  schedule:
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 concurrency:
@@ -17,8 +15,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 2
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -37,57 +33,6 @@ jobs:
           path: ${{ github.workspace }}/blueskyfeedbot
           key: feed-cache-${{ github.run_id }}
           restore-keys: feed-cache-
-
-      - name: Wait for deployment to complete
-        if: github.event_name == 'push'
-        env:
-          RSS_FEED_URL: 'https://blog.lcyou.me/rss.xml'
-        run: |
-          # 今回のpushで追加された記事ファイルを特定する
-          NEW_FILES=$(git diff --name-only HEAD~1 HEAD -- 'src/pages/posts/*.md' 2>/dev/null || echo "")
-
-          if [ -z "$NEW_FILES" ]; then
-            echo "新しい記事ファイルが検出されませんでした。デプロイ待機をスキップします。"
-            exit 0
-          fi
-
-          echo "新しい記事: $NEW_FILES"
-
-          # ファイル名からスラッグを抽出 (例: 260526-b059efc1.md -> 260526-b059efc1)
-          SLUGS=()
-          for FILE in $NEW_FILES; do
-            SLUG=$(basename "$FILE" .md)
-            SLUGS+=("$SLUG")
-            echo "  待機対象スラッグ: $SLUG"
-          done
-
-          echo "Cloudflare Pagesのデプロイ完了を待機します（30秒ごとに最大5分ポーリング）..."
-
-          MAX_RETRIES=10
-          for i in $(seq 1 $MAX_RETRIES); do
-            echo "試行 $i/$MAX_RETRIES: RSSフィードを確認中..."
-            RSS_CONTENT=$(curl -sf "$RSS_FEED_URL" || echo "")
-
-            ALL_FOUND=true
-            for SLUG in "${SLUGS[@]}"; do
-              if ! echo "$RSS_CONTENT" | grep -q "$SLUG"; then
-                ALL_FOUND=false
-                echo "  まだRSSに存在しません: $SLUG"
-              fi
-            done
-
-            if [ "$ALL_FOUND" = "true" ]; then
-              echo "✓ 新しい記事がRSSフィードに反映されました！デプロイ完了。"
-              exit 0
-            fi
-
-            if [ $i -lt $MAX_RETRIES ]; then
-              echo "  30秒待機します..."
-              sleep 30
-            fi
-          done
-
-          echo "⚠ 警告: 5分経過しても記事がRSSに見つかりませんでした。このまま続行します。"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
