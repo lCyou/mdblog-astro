@@ -5,6 +5,7 @@ import Footer from '@/components/Footer.astro';
 import ThemeToggle from '@/components/ThemeToggle.astro';
 import '@/styles/global.css';
 import { siteConfig } from '@/data/seo';
+import { ClientRouter } from 'astro:transitions';
 
 const { pageTitle, description, ogImage, ogImageAlt } = Astro.props;
 const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
@@ -56,6 +57,63 @@ const ogImageUrl = ogImage
         const storedTheme = localStorage.getItem('theme');
         const theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <ClientRouter />
+    <script is:inline>
+      (() => {
+        const homePath = '/';
+        const transitionName = 'hero-main';
+        const normalizePath = (pathname) => pathname.replace(/\/$/, '') || '/';
+        const isHomeTransition = (from, to) => {
+          const fromHome = normalizePath(from.pathname) === homePath;
+          const toHome = normalizePath(to.pathname) === homePath;
+          return fromHome !== toHome;
+        };
+        const transitionDirection = (from, to) => {
+          return normalizePath(from.pathname) === homePath ? 'from-hero' : 'to-hero';
+        };
+        const transitionRoot = (doc, pathname) => {
+          return normalizePath(pathname) === homePath
+            ? doc.querySelector('.home')
+            : doc.querySelector('.page-content');
+        };
+        const clearTransitionRoots = (doc) => {
+          doc.documentElement.removeAttribute('data-hero-transition');
+          doc.querySelectorAll('[data-hero-transition-root]').forEach((el) => {
+            el.style.viewTransitionName = '';
+            el.removeAttribute('data-hero-transition-root');
+          });
+        };
+        const markTransitionRoot = (el) => {
+          if (!el) return;
+          el.style.viewTransitionName = transitionName;
+          el.setAttribute('data-hero-transition-root', '');
+        };
+
+        document.addEventListener('astro:before-preparation', (event) => {
+          clearTransitionRoots(document);
+          if (!isHomeTransition(event.from, event.to)) return;
+
+          const direction = transitionDirection(event.from, event.to);
+          document.documentElement.setAttribute('data-hero-transition', direction);
+          markTransitionRoot(transitionRoot(document, event.from.pathname));
+
+          const defaultLoader = event.loader;
+          event.loader = async () => {
+            await defaultLoader();
+            clearTransitionRoots(event.newDocument);
+            event.newDocument.documentElement.setAttribute('data-hero-transition', direction);
+            markTransitionRoot(transitionRoot(event.newDocument, event.to.pathname));
+          };
+        });
+
+        document.addEventListener('astro:before-swap', (event) => {
+          if (!isHomeTransition(event.from, event.to)) return;
+          event.viewTransition.finished.finally(() => clearTransitionRoots(document));
+        });
+
+        document.addEventListener('astro:page-load', () => clearTransitionRoots(document));
       })();
     </script>
     <slot name="head" />

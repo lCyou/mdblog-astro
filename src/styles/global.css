@@ -87,6 +87,52 @@ img {
   border-radius: 0.5rem;
 }
 
+html[data-hero-transition="from-hero"]::view-transition-old(hero-main) {
+  animation: hero-out 180ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+html[data-hero-transition="from-hero"]::view-transition-new(hero-main) {
+  animation: content-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+html[data-hero-transition="to-hero"]::view-transition-old(hero-main) {
+  animation: content-out 160ms ease both;
+}
+
+html[data-hero-transition="to-hero"]::view-transition-new(hero-main) {
+  animation: hero-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hero-out {
+  to {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(-1rem) scale(0.96);
+  }
+}
+
+@keyframes content-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+
+@keyframes content-out {
+  to {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(1rem) scale(1.02);
+  }
+}
+
 
 /* 段落 */
 p {

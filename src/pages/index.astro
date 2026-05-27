@@ -1,43 +1,82 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Terminal from '@/components/Terminal';
+import { siteConfig } from '@/data/seo';
+
 const pageTitle = "Home";
 ---
 
-<BaseLayout pageTitle={pageTitle}>
-	<div class="terminal-container">
-		<Terminal client:load />
-	</div>
+<BaseLayout pageTitle={pageTitle} description={siteConfig.description}>
+	<main class="home" aria-labelledby="home-title">
+		<img
+			class="avatar"
+			src="https://github.com/lcyou.png"
+			alt=""
+			width="128"
+			height="128"
+			loading="eager"
+			decoding="async"
+			onerror="this.src='/favicon.svg'; this.onerror=null;"
+		/>
+
+		<h1 id="home-title">lCyou</h1>
+		<p>{siteConfig.description}</p>
+
+		<nav class="links" aria-label="Links">
+			<a href="https://github.com/lcyou" target="_blank" rel="noopener noreferrer">GitHub</a>
+			<a href="https://twitter.com/lCyo_u" target="_blank" rel="noopener noreferrer">X</a>
+			<a href="https://bsky.app/profile/lcyou.bsky.social" target="_blank" rel="noopener noreferrer">Bluesky</a>
+			<a href="/rss.xml">RSS</a>
+		</nav>
+	</main>
 </BaseLayout>
 
 <style>
-	.terminal-container {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: 90vw;
-		max-width: 1200px;
-		height: 80vh;
-		max-height: 800px;
-		z-index: 1;
-		padding: 1rem;
-		box-sizing: border-box;
-		background-color: rgba(13, 12, 12, 1);
+	.home {
+		min-height: calc(100vh - 2rem);
+		display: grid;
+		align-content: center;
+		gap: 1rem;
+		padding-bottom: 7rem;
+	}
+
+	.home h1 {
+		margin: 0;
+		font-size: clamp(3rem, 14vw, 7rem);
+		line-height: 1;
+	}
+
+	.home p {
+		max-width: 32rem;
+		margin: 0;
+	}
+
+	.avatar {
+		width: 8rem;
+		height: 8rem;
+		border: 1px solid var(--color-border);
+		border-radius: 50%;
+		object-fit: cover;
+		background-color: var(--color-card-bg);
+	}
+
+	.links {
+		display: grid;
+		gap: 0.35rem;
+		max-width: 24rem;
+		margin-top: 1rem;
+	}
+
+	.links a {
+		padding: 0.75rem 0.9rem;
+		border: 1px solid transparent;
 		border-radius: 0.5rem;
-		backdrop-filter: blur(10px);
+		background-color: var(--color-card-bg);
+		font-weight: 700;
 	}
-	
-	:global(footer) {
-		display: none;
-	}
-	
-	@media (max-width: 768px) {
-		.terminal-container {
-			width: 95vw;
-			height: 85vh;
-			padding: 0.5rem;
-			margin-bottom: 5rem;
-		}
+
+	.links a:hover,
+	.links a:focus {
+		border-color: var(--color-accent);
+		transform: translateX(0.25rem);
 	}
 </style>
