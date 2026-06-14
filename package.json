@@ -46,8 +46,14 @@
   },
   "pnpm": {
     "overrides": {
-      "yaml": ">=2.8.3",
-      "undici": ">=7.24.0"
+      "yaml": "2.9.0",
+      "undici": "7.24.6",
+      "defu": "6.1.7",
+      "vite": "6.4.2",
+      "fast-uri": "3.1.2",
+      "fast-xml-builder": "1.2.0",
+      "devalue": "5.8.1",
+      "esbuild": "0.28.1"
     },
     "onlyBuiltDependencies": ["esbuild", "sharp", "workerd"]
   }
