@@ -61,6 +61,147 @@ const ogImageAlt = `${frontmatter.title}のOGイメージ`;
   </article>
 </BaseLayout>
 
+<script>
+import mermaid from 'mermaid';
+
+const LIGHT_VARS = {
+  background: '#f9f5d7',
+  mainBkg: '#e8e4c6',
+  nodeBorder: '#aeac99',
+  clusterBkg: '#f9f5d7',
+  titleColor: '#33312d',
+  edgeLabelBackground: '#f9f5d7',
+  primaryColor: '#e8e4c6',
+  primaryTextColor: '#33312d',
+  primaryBorderColor: '#aeac99',
+  lineColor: '#605d52',
+  secondaryColor: '#f9f5d7',
+  tertiaryColor: '#e8e4c6',
+  actorBkg: '#e8e4c6',
+  actorBorder: '#aeac99',
+  actorTextColor: '#33312d',
+  actorLineColor: '#605d52',
+  signalColor: '#605d52',
+  signalTextColor: '#33312d',
+  labelBoxBkgColor: '#e8e4c6',
+  labelBoxBorderColor: '#aeac99',
+  labelTextColor: '#33312d',
+  loopTextColor: '#33312d',
+  noteBorderColor: '#f3927e',
+  noteBkgColor: '#f9f5d7',
+  noteTextColor: '#605d52',
+  activationBorderColor: '#f3927e',
+  activationBkgColor: '#f9f5d7',
+};
+
+const DARK_VARS = {
+  background: '#33312d',
+  mainBkg: '#605d52',
+  nodeBorder: '#2a2a2a',
+  clusterBkg: '#33312d',
+  titleColor: '#fdf6e3',
+  edgeLabelBackground: '#33312d',
+  primaryColor: '#605d52',
+  primaryTextColor: '#fdf6e3',
+  primaryBorderColor: '#2a2a2a',
+  lineColor: '#fdf6e3',
+  secondaryColor: '#33312d',
+  tertiaryColor: '#605d52',
+  actorBkg: '#605d52',
+  actorBorder: '#2a2a2a',
+  actorTextColor: '#fdf6e3',
+  actorLineColor: '#fdf6e3',
+  signalColor: '#fdf6e3',
+  signalTextColor: '#fdf6e3',
+  labelBoxBkgColor: '#605d52',
+  labelBoxBorderColor: '#2a2a2a',
+  labelTextColor: '#fdf6e3',
+  loopTextColor: '#fdf6e3',
+  noteBorderColor: '#f3927e',
+  noteBkgColor: '#33312d',
+  noteTextColor: '#fdf6e3',
+  activationBorderColor: '#f3927e',
+  activationBkgColor: '#33312d',
+};
+
+function isDark() {
+  return document.documentElement.classList.contains('dark');
+}
+
+function getMermaidConfig() {
+  return {
+    startOnLoad: false,
+    theme: 'base' as const,
+    themeVariables: isDark() ? DARK_VARS : LIGHT_VARS,
+  };
+}
+
+// graph definitions keyed by container id for re-render on theme toggle
+const graphStore = new Map<string, string>();
+
+async function renderAll() {
+  mermaid.initialize(getMermaidConfig());
+
+  for (const [containerId, definition] of graphStore) {
+    const container = document.getElementById(containerId);
+    if (!container) continue;
+    const { svg } = await mermaid.render(`svg-${containerId}`, definition);
+    container.innerHTML = svg;
+  }
+}
+
+async function initMermaidBlocks() {
+  mermaid.initialize(getMermaidConfig());
+
+  const mermaidBlocks = document.querySelectorAll<HTMLElement>(
+    'pre[data-language="mermaid"], pre:has(code.language-mermaid)'
+  );
+
+  for (const pre of mermaidBlocks) {
+    const code = pre.querySelector('code');
+    if (!code) continue;
+
+    const definition = code.innerText;
+    const containerId = `mermaid-${Math.random().toString(36).slice(2)}`;
+    graphStore.set(containerId, definition);
+
+    const container = document.createElement('div');
+    container.id = containerId;
+    container.classList.add('mermaid-diagram');
+
+    const { svg } = await mermaid.render(`svg-${containerId}`, definition);
+    container.innerHTML = svg;
+
+    pre.replaceWith(container);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initMermaidBlocks);
+
+// Re-render with new theme when dark mode is toggled
+const observer = new MutationObserver((mutations) => {
+  for (const m of mutations) {
+    if (m.type === 'attributes' && m.attributeName === 'class') {
+      renderAll();
+    }
+  }
+});
+observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+</script>
+
+<style>
+  :global(.mermaid-diagram) {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+  }
+
+  :global(.mermaid-diagram svg) {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+
 <style>
   .post-header {
     display: flex;
