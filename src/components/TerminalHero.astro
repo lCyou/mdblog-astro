@@ -1,0 +1,166 @@
+---
+// CSS-only ターミナル風ヒーロー（xterm.js を使わず、SSR 時点で中身が描画される）
+// 各行が順にフェードインするだけの軽いアニメーション。JS は不要。
+interface Props {
+  title?: string;
+  subtitle?: string;
+  lines?: string[];
+  links?: { label: string; href: string }[];
+}
+
+const {
+  title = "lCyou's Blog",
+  subtitle = "技術的なことや本の感想など、いろいろ書いています。",
+  lines = [
+    "$ whoami",
+    "lcyou — Software Engineer",
+    "",
+    "$ cat about.txt",
+    "このブログでは技術メモや読書の感想を綴っています。",
+    "ターミナル風の UI がトレードマーク。",
+    "",
+    "$ ls ./posts",
+    "最新の記事はこのページの下にあります ↓",
+  ],
+  links = [
+    { label: "blog", href: "/blog/" },
+    { label: "about", href: "/about/" },
+    { label: "search", href: "/search/" },
+  ],
+} = Astro.props;
+
+// アニメーションの開始遅延（秒）。行ごとに少しずつずらす
+const lineDelay = (i: number) => `${(i * 0.35 + 0.2).toFixed(2)}s`;
+---
+
+<section class="terminal-hero" aria-label="自己紹介">
+  <div class="terminal-window">
+    <div class="terminal-titlebar">
+      <span class="dot dot-red"></span>
+      <span class="dot dot-yellow"></span>
+      <span class="dot dot-green"></span>
+      <span class="terminal-title">lcyou@blog: ~</span>
+    </div>
+    <div class="terminal-body">
+      <span class="term-title">{title}</span>
+      <span class="term-subtitle">{subtitle}</span>
+      {lines.map((line, i) => (
+        <span class="term-line" style={`animation-delay:${lineDelay(i)}`}>{line || " "}</span>
+      ))}
+      <span class="term-links" style={`animation-delay:${lineDelay(lines.length)}`}>
+        {links.map((l) => (
+          <a href={l.href} class="term-link">open {l.label}</a>
+        ))}
+      </span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .terminal-hero {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0 3rem;
+  }
+
+  .terminal-window {
+    width: 100%;
+    max-width: 760px;
+    background-color: #0d0c0c;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    background-image: linear-gradient(180deg, #141312 0%, #0d0c0c 100%);
+  }
+
+  .terminal-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.9rem;
+    background-color: #1a1917;
+    border-bottom: 1px solid #2a2825;
+  }
+
+  .dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .dot-red { background-color: #c4746e; }
+  .dot-yellow { background-color: #c4b28a; }
+  .dot-green { background-color: #8a9a7b; }
+
+  .terminal-title {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    color: #a6a69c;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  }
+
+  .terminal-body {
+    margin: 0;
+    padding: 1.2rem 1.4rem;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: #c5c9c5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 18rem;
+  }
+
+  .term-title {
+    display: block;
+    color: #c4b28a;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .term-subtitle {
+    display: block;
+    color: #8ea4a2;
+    margin-bottom: 1rem;
+  }
+
+  .term-line {
+    display: block;
+    opacity: 0;
+    animation: term-fade-in 0.4s ease forwards;
+  }
+
+  .term-links {
+    display: block;
+    margin-top: 1rem;
+    opacity: 0;
+    animation: term-fade-in 0.4s ease forwards;
+  }
+
+  .term-link {
+    display: inline-block;
+    margin-right: 1.2rem;
+    color: #7fb4ca;
+    text-decoration: none;
+    border-bottom: 1px dashed #7fb4ca55;
+  }
+  .term-link:hover {
+    color: #c4b28a;
+    border-bottom-color: #c4b28a;
+  }
+
+  @keyframes term-fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* アニメーションを減らしたい環境への配慮 */
+  @media (prefers-reduced-motion: reduce) {
+    .term-line,
+    .term-links {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>
