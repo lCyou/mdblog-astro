@@ -20,7 +20,14 @@ export default defineConfig({
 
   site: "https://blog.lcyou.me",
   trailingSlash: "always",
-  integrations: [icon(), preact(), sitemap()],
+  integrations: [
+    icon(),
+    preact(),
+    sitemap({
+      // 検索エンジンに載せる必要のないページ
+      filter: (page) => !/\/(terminal|404|500)\/?$/.test(new URL(page).pathname),
+    }),
+  ],
 
   vite: {
     resolve: {

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>About スマホ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=M+PLUS+1+Code:wght@400;500;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 1900px; box-sizing: border-box; background: {{t.bg}}; color: {{t.text}}; font-family: 'IBM Plex Mono', 'M PLUS 1 Code', monospace; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="padding: 0 16px; border-bottom: 1px solid {{t.rule}}; display: flex; flex-direction: column">
+    <div style="display: flex; align-items: center; height: 52px; font-size: 13px; color: {{t.muted}}">
+      <span style="flex-grow: 1">LCYOU(1)</span>
+      <a href="/search/" aria-label="検索" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: {{t.text}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></a>
+      <button type="button" aria-label="テーマを切り替え" style="width: 44px; height: 44px; margin-right: -10px; display: flex; align-items: center; justify-content: center; background: transparent; border: 0; color: {{t.text}}; cursor: pointer">
+        <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+        <sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+      </button>
+    </div>
+    <nav aria-label="メイン" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding-bottom: 12px; font-size: 14px">
+      <a href="/" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">home</a>
+      <a href="/blog/" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">blog</a>
+      <a href="/about/" aria-current="page" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.inv}}; background: {{t.inv}}; color: {{t.invText}}; text-decoration: none">about</a>
+      <a href="/tags/" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">tags</a>
+    </nav>
+  </header>
+
+  <main style="padding: 32px 16px 0; display: flex; flex-direction: column; gap: 36px">
+
+    <section style="display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}">NAME</h2>
+      <div style="display: flex; align-items: center; gap: 16px">
+        <div style="width: 72px; height: 72px; flex-shrink: 0; border: 1px dashed {{t.muted}}; background: {{t.card}}; display: flex; align-items: center; justify-content: center; font-size: 11px; color: {{t.muted}}">[avatar]</div>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <h1 style="margin: 0; font-size: 32px; font-weight: 600; letter-spacing: -0.02em">lcyou</h1>
+        </div>
+      </div>
+      <p style="margin: 0; font-size: 15px; line-height: 1.8; color: {{t.body}}">— ソフトウェアエンジニア。ID 基盤の開発・運用をしています。</p>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}">DESCRIPTION</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 2; color: {{t.body}}">ウェルスナビ株式会社のサービス基盤グループで、ID 基盤まわりを担当しています。ユーザー認証やセキュリティ関連の機能を作るのが主な仕事です。</p>
+      <p style="margin: 0; font-size: 14px; line-height: 2; color: {{t.body}}">このブログでは、OAuth / OIDC などの認証・認可の話、Neovim の設定、Astro や自宅環境いじりのこと、参加したイベントの感想などを書いています。</p>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 4px">
+      <h2 style="margin: 0 0 6px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}">HISTORY</h2>
+      <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 1px solid {{t.rule}}">
+        <li style="display: flex; flex-direction: column; gap: 6px; padding: 16px 0; border-bottom: 1px solid {{t.rule}}">
+          <div style="font-size: 12px; color: {{t.accent}}">2026-02</div>
+          <h3 style="margin: 0; font-size: 15px; font-weight: 700; line-height: 1.6">個人ブログサイトを作りました</h3>
+          <p style="margin: 0; font-size: 13px; line-height: 1.9; color: {{t.body}}">Astro を使用した個人ブログ。Markdown ベースの記事管理、ダークモード対応、Cloudflare Workers へのデプロイを実装。</p>
+          <a href="https://github.com/lcyou/mdblog-astro" style="align-self: flex-start; font-size: 13px; color: {{t.accent}}; padding: 8px 0">lcyou/mdblog-astro</a>
+        </li>
+        <li style="display: flex; flex-direction: column; gap: 6px; padding: 16px 0; border-bottom: 1px solid {{t.rule}}">
+          <div style="font-size: 12px; color: {{t.accent}}">2025-04 — HEAD</div>
+          <h3 style="margin: 0; font-size: 15px; font-weight: 700; line-height: 1.6">ウェルスナビ株式会社 / ソフトウェアエンジニア</h3>
+          <p style="margin: 0; font-size: 13px; line-height: 1.9; color: {{t.body}}">サービス基盤グループで ID 基盤に所属。ID 基盤の開発・運用を担当し、ユーザー認証やセキュリティ関連の機能を実装。</p>
+        </li>
+        <li style="display: flex; flex-direction: column; gap: 6px; padding: 16px 0; border-bottom: 1px solid {{t.rule}}">
+          <div style="font-size: 12px; color: {{t.accent}}">2024-04 — 2025-03</div>
+          <h3 style="margin: 0; font-size: 15px; font-weight: 700; line-height: 1.6">株式会社MICIN / Web エンジニア（インターン）</h3>
+          <p style="margin: 0; font-size: 13px; line-height: 1.9; color: {{t.body}}">複数プラットフォームの基盤開発チームに所属し、Web サイト・アプリケーションの開発を実施。</p>
+        </li>
+      </ol>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}">TOPICS</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px">
+        <a href="/tags/OAuth/" style="padding: 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">OAuth</a>
+        <a href="/tags/OIDC/" style="padding: 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">OIDC</a>
+        <a href="/tags/keycloak/" style="padding: 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">keycloak</a>
+        <a href="/tags/neovim/" style="padding: 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">neovim</a>
+        <a href="/tags/astro/" style="padding: 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">astro</a>
+        <a href="/tags/TypeScript/" style="padding: 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">TypeScript</a>
+        <a href="/tags/proxmox/" style="padding: 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">proxmox</a>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 4px">
+      <h2 style="margin: 0 0 4px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}">SEE ALSO</h2>
+      <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; font-size: 14px">
+        <li><a href="https://github.com/lcyou" style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px dotted {{t.leader}}; color: inherit; text-decoration: none"><span>github(1)</span><span style="color: {{t.muted}}">@lcyou</span></a></li>
+        <li><a href="https://twitter.com/lCyo_u" style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px dotted {{t.leader}}; color: inherit; text-decoration: none"><span>x(1)</span><span style="color: {{t.muted}}">@lCyo_u</span></a></li>
+        <li><a href="https://bsky.app/profile/lcyou.bsky.social" style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px dotted {{t.leader}}; color: inherit; text-decoration: none"><span>bluesky(1)</span><span style="color: {{t.muted}}">lcyou.bsky.social</span></a></li>
+        <li><a href="/rss.xml" style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px dotted {{t.leader}}; color: inherit; text-decoration: none"><span>rss(5)</span><span style="color: {{t.muted}}">/rss.xml</span></a></li>
+      </ul>
+    </section>
+  </main>
+
+  <div style="flex-grow: 1"></div>
+  <footer style="margin: 0 16px; display: flex; justify-content: space-between; padding: 16px 0 20px; font-size: 12px; color: {{t.muted}}">
+    <span>lcyou</span>
+    <span>LCYOU(1)</span>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = (this.props.theme ?? 'light') === 'dark';
+    const t = dark
+      ? { bg: '#1c1b18', card: '#24231f', text: '#e8e2cc', body: '#cfc8b0', muted: '#9c967f', rule: '#3a3830', leader: '#4a473d', inv: '#e8e2cc', invText: '#1c1b18', accent: '#e8916f', bar: '#2a2925', barText: '#cfc8b0' }
+      : { bg: '#f7f2e2', card: '#fbf8ee', text: '#2f2d28', body: '#46443c', muted: '#6b685d', rule: '#ddd5bb', leader: '#c9c0a2', inv: '#2f2d28', invText: '#f7f2e2', accent: '#a8452f', bar: '#2f2d28', barText: '#e8e2cc' };
+    return { t, isDark: dark, isLight: !dark };
+  }
+}
+</script>
+</body>
+</html>

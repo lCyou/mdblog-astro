@@ -1,47 +1,62 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-const allPosts = Object.values(import.meta.glob('../posts/*.md', { eager: true }));
-const tags = [...new Set(allPosts.map((post: any) => post.frontmatter.tags).flat())];
-const pageTitle = "タグインデックス";
+import { getTagCounts } from '@/utils/posts';
+import { siteConfig } from '@/data/seo';
+
+const tags = getTagCounts();
 ---
 
-<BaseLayout pageTitle={pageTitle}>
-  <h1>タグインデックス</h1>
-  <div class="tags">
-    {tags.map((tag) => (
-      <p class="tag">#<a href={`/tags/${tag}`}>{tag}</a></p>
-    ))}
-  </div>
+<BaseLayout
+  pageTitle="タグ一覧"
+  description={`${siteConfig.title} のタグ一覧。${tags.slice(0, 8).map((t) => t.tag).join('、')} など。`}
+  manTitle="TAGS(7)"
+  current="tags"
+  footerCenter="(END)"
+  status={{ path: '~/blog/tags/', info: [`${tags.length} tags`] }}
+>
+  <main class="container man-sections">
+    <h1 class="page-title">タグ一覧<span class="muted">{tags.length} tags</span></h1>
+
+    <section class="man-section" aria-labelledby="tags-label">
+      <h2 class="man-label" id="tags-label">TAGS</h2>
+      <ul class="chip-list">
+        {
+          tags.map(({ tag, count }) => (
+            <li>
+              <a href={`/tags/${tag}/`} class="chip">
+                {tag} <span class="muted">{count}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
 </BaseLayout>
 
 <style>
-  .tags {
+  .page-title {
+    margin: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5em;
+    align-items: baseline;
+    gap: 4px 16px;
+    font-size: 30px;
+    font-weight: 600;
   }
 
-  .tag {
-    margin: 0;
-    border: 2px solid var(--color-border);
-    border-radius: 0.5em;
-    padding: 0.5em 1em;
-    font-size: 1.15em;
-    background-color: var(--color-card-bg);
-    transition: all 0.2s ease;
+  .page-title .muted {
+    font-size: 15px;
+    font-weight: 400;
   }
 
-  .tag:hover {
-    border-color: var(--color-accent);
-    transform: translateY(-2px);
-  }
+  @media (max-width: 767px) {
+    .page-title {
+      font-size: 22px;
+    }
 
-  .tag a {
-    color: var(--color-text);
-    text-decoration: none;
-  }
-
-  .tag:hover a {
-    color: var(--color-accent);
+    .page-title .muted {
+      font-size: 13px;
+    }
   }
 </style>

@@ -1,40 +1,67 @@
 ---
-import PageLayout from '@/layouts/PageLayout.astro';
-
-const pageTitle = "検索";
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { siteConfig } from '@/data/seo';
 ---
 
-<PageLayout pageTitle={pageTitle}>
-  <h1>検索</h1>
-  <div id="search" class="search-container"></div>
-</PageLayout>
+<BaseLayout
+  pageTitle="検索"
+  description={`${siteConfig.title} の記事を検索します。`}
+  manTitle="SEARCH(1)"
+  current="search"
+  status={{ path: '~/blog/search', info: ['grep -r'] }}
+>
+  <main class="container man-sections">
+    <h1 class="page-title">検索</h1>
+    <div id="search" class="search-container"></div>
+    <noscript><p class="muted">検索には JavaScript が必要です。<a href="/blog/">記事一覧</a>からも探せます。</p></noscript>
+  </main>
+</BaseLayout>
 
 <style>
-  .search-container {
-    margin-top: 1rem;
+  .page-title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 767px) {
+    .page-title {
+      font-size: 22px;
+    }
   }
 </style>
 
 <style is:global>
-  /* Pagefind UI カラーカスタマイズ */
-  :root {
-    --pagefind-ui-scale: 1;
-    --pagefind-ui-primary: var(--color-accent);
-    --pagefind-ui-text: var(--color-text);
-    --pagefind-ui-background: var(--color-card-bg);
-    --pagefind-ui-border: var(--color-border);
-    --pagefind-ui-tag: var(--color-card-bg);
-    --pagefind-ui-border-width: 2px;
-    --pagefind-ui-border-radius: 0.5rem;
-    --pagefind-ui-image-border-radius: 0.5rem;
+  /* Pagefind UI */
+  .search-container {
+    --pagefind-ui-scale: 0.9;
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-text: var(--text);
+    --pagefind-ui-background: var(--card);
+    --pagefind-ui-border: var(--text);
+    --pagefind-ui-tag: var(--card);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 0;
+    --pagefind-ui-image-border-radius: 0;
     --pagefind-ui-image-box-ratio: 3 / 2;
-    --pagefind-ui-font: inherit;
+    --pagefind-ui-font: var(--font-mono);
   }
 
-  .pagefind-ui mark {
-    background-color: var(--color-accent);
-    color: inherit;
-    border-radius: 2px;
+  .search-container .pagefind-ui__result-link {
+    color: var(--text);
+  }
+
+  .search-container .pagefind-ui__result-excerpt {
+    color: var(--body);
+  }
+
+  .search-container .pagefind-ui__result {
+    border-top-color: var(--rule);
+  }
+
+  .search-container mark {
+    background-color: var(--accent);
+    color: var(--bg);
     padding: 0 2px;
   }
 </style>
@@ -43,14 +70,16 @@ const pageTitle = "検索";
   import { PagefindUI } from '@pagefind/default-ui';
   import '@pagefind/default-ui/css/ui.css';
 
-  window.addEventListener('DOMContentLoaded', () => {
-    new PagefindUI({
-      element: '#search',
-      showSubResults: false,
-      translations: {
-        placeholder: '記事を検索...',
-        zero_results: '[SEARCH_TERM] の検索結果はありませんでした。',
-      },
-    });
+  const ui = new PagefindUI({
+    element: '#search',
+    showSubResults: false,
+    translations: {
+      placeholder: '記事を検索...',
+      zero_results: '[SEARCH_TERM] の検索結果はありませんでした。',
+    },
   });
+
+  // /search/?q=... で来たときはその語で検索する
+  const q = new URLSearchParams(window.location.search).get('q');
+  if (q) ui.triggerSearch(q);
 </script>

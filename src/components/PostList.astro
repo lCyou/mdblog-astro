@@ -1,0 +1,184 @@
+---
+import { groupByMonth, type Post } from '@/utils/posts';
+
+interface Props {
+  posts: Post[];
+}
+
+const groups = groupByMonth(Astro.props.posts);
+---
+
+<div class="post-list">
+  {
+    groups.map((group) => (
+      <section class="month" aria-label={group.label}>
+        <h2 class="month-label">
+          <span class="dash" aria-hidden="true">── </span>
+          {group.label}
+        </h2>
+        <ul>
+          {group.posts.map((post) => (
+            <li>
+              <div class="when">
+                <time datetime={post.date}>
+                  <span class="year">{post.date.slice(0, 5)}</span>
+                  {post.date.slice(5)}
+                </time>
+                <span class="hash">{post.hash}</span>
+              </div>
+              <article>
+                <h3>
+                  <a href={post.url}>{post.title}</a>
+                </h3>
+                {post.description && <p>{post.description}</p>}
+                <div class="tags">{post.tags.join(', ')}</div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--text);
+  }
+
+  .month {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    padding: 20px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .month-label {
+    margin: 0;
+    padding-top: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .dash,
+  .year {
+    display: none;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .when {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 4px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .hash {
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  article {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--body);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .tags {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 767px) {
+    .month {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 16px 0 0;
+      border-bottom: 0;
+    }
+
+    .month-label {
+      padding-top: 0;
+      font-size: 13px;
+    }
+
+    .dash,
+    .year {
+      display: inline;
+    }
+
+    ul {
+      gap: 0;
+    }
+
+    li {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 6px;
+      padding: 14px 0 16px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .when {
+      flex-direction: row;
+      gap: 12px;
+      padding-top: 0;
+      font-size: 12px;
+    }
+
+    .hash {
+      font-size: 12px;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    p {
+      font-size: 13px;
+    }
+
+    .tags {
+      font-size: 12px;
+    }
+  }
+</style>

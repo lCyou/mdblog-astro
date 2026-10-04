@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>記事ページ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=M+PLUS+1+Code:wght@400;500;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 2320px; box-sizing: border-box; background: {{t.bg}}; color: {{t.text}}; font-family: 'IBM Plex Mono', 'M PLUS 1 Code', monospace; display: flex; flex-direction: column; align-items: center; overflow: hidden">
+
+  <div style="width: 100%; border-bottom: 1px solid {{t.rule}}; display: flex; justify-content: center">
+    <header style="width: 1040px; display: flex; flex-direction: column">
+      <div style="display: flex; justify-content: space-between; padding: 22px 0 14px; font-size: 14px; color: {{t.muted}}">
+        <span>260614-CD9F2539(7)</span>
+        <span>lCyou's Blog Manual</span>
+        <span>260614-CD9F2539(7)</span>
+      </div>
+      <nav aria-label="メイン" style="display: flex; align-items: center; gap: 2px; padding-bottom: 14px; font-size: 15px">
+        <a href="/" style="padding: 10px 14px; color: inherit; text-decoration: none"><span style="color: {{t.muted}}">1:</span>home</a>
+        <a href="/blog/" aria-current="page" style="padding: 10px 14px; background: {{t.inv}}; color: {{t.invText}}; text-decoration: none"><span style="opacity: 0.6">2:</span>blog</a>
+        <a href="/about/" style="padding: 10px 14px; color: inherit; text-decoration: none"><span style="color: {{t.muted}}">3:</span>about</a>
+        <a href="/tags/" style="padding: 10px 14px; color: inherit; text-decoration: none"><span style="color: {{t.muted}}">4:</span>tags</a>
+        <a href="/search/" style="padding: 10px 14px; color: inherit; text-decoration: none"><span style="color: {{t.muted}}">5:</span>search</a>
+        <div style="flex-grow: 1"></div>
+        <a href="/rss.xml" style="padding: 10px 14px; color: {{t.muted}}; text-decoration: none">rss</a>
+        <button type="button" aria-label="テーマを切り替え" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid {{t.rule}}; color: {{t.text}}; cursor: pointer">
+          <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+          <sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+        </button>
+      </nav>
+    </header>
+  </div>
+
+  <div style="width: 1040px; padding-top: 40px; display: flex; flex-direction: column; gap: 36px">
+
+    <nav aria-label="パンくずリスト" style="font-size: 14px; color: {{t.muted}}">
+      <ol style="list-style: none; margin: 0; padding: 0; display: flex; gap: 0">
+        <li><a href="/" style="color: inherit">~</a>/</li>
+        <li><a href="/blog/" style="color: inherit">blog</a>/</li>
+        <li><a href="/blog/" style="color: inherit">posts</a>/</li>
+        <li aria-current="page" style="color: {{t.text}}">260614-cd9f2539.md</li>
+      </ol>
+    </nav>
+
+    <header style="display: flex; flex-direction: column; gap: 18px; padding-bottom: 32px; border-bottom: 1px solid {{t.text}}">
+      <h1 style="margin: 0; font-size: 38px; font-weight: 700; line-height: 1.45; letter-spacing: -0.01em">認可コードの横取り攻撃対策でのPKCE</h1>
+      <p style="margin: 0; font-size: 16px; line-height: 1.9; color: {{t.body}}; max-width: 780px">認可コード横取り攻撃という認可コードフローに対する攻撃から、認可コードフローを拡張する Proof Key for Code Exchange（PKCE）の説明をしてみます。</p>
+      <dl style="margin: 0; display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 14px">
+        <div style="display: flex; gap: 8px"><dt style="color: {{t.muted}}">commit</dt><dd style="margin: 0; color: {{t.accent}}">cd9f2539</dd></div>
+        <div style="display: flex; gap: 8px"><dt style="color: {{t.muted}}">author</dt><dd style="margin: 0"><a href="/about/" style="color: inherit">lcyou</a></dd></div>
+        <div style="display: flex; gap: 8px"><dt style="color: {{t.muted}}">date</dt><dd style="margin: 0"><time datetime="2026-06-14">2026-06-14</time></dd></div>
+        <div style="display: flex; gap: 8px"><dt style="color: {{t.muted}}">modified</dt><dd style="margin: 0">[最終更新日]</dd></div>
+        <div style="display: flex; gap: 8px"><dt style="color: {{t.muted}}">read</dt><dd style="margin: 0">[読了時間]</dd></div>
+      </dl>
+      <ul style="list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; font-size: 14px">
+        <li><a href="/tags/tech/" style="display: inline-block; padding: 6px 10px; border: 1px solid {{t.rule}}; color: {{t.accent}}; text-decoration: none">#tech</a></li>
+        <li><a href="/tags/PKCE/" style="display: inline-block; padding: 6px 10px; border: 1px solid {{t.rule}}; color: {{t.accent}}; text-decoration: none">#PKCE</a></li>
+        <li><a href="/tags/OAuth/" style="display: inline-block; padding: 6px 10px; border: 1px solid {{t.rule}}; color: {{t.accent}}; text-decoration: none">#OAuth</a></li>
+        <li><a href="/tags/OIDC/" style="display: inline-block; padding: 6px 10px; border: 1px solid {{t.rule}}; color: {{t.accent}}; text-decoration: none">#OIDC</a></li>
+      </ul>
+    </header>
+
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 72px">
+
+      <article style="display: flex; flex-direction: column; gap: 22px; font-size: 16px; line-height: 2.05; max-width: 720px; color: {{t.body}}">
+        <p style="margin: 0">認可コード横取り攻撃とは、パブリッククライアント（モバイルアプリや SPA など）で悪意のあるアプリが認可コードを盗み出し、アクセストークンを不正に取得する攻撃手法です。</p>
+        <p style="margin: 0">今回は認可コード横取り攻撃と PKCE（RFC7636 で OAuth の拡張仕様として定義されている）を使うことで対策されていることを確認し、個人的に思う PKCE のききどころについてまとめます。</p>
+
+        <h3 id="bg" style="margin: 16px 0 0; font-size: 18px; font-weight: 700; line-height: 1.6; color: {{t.text}}"><span style="color: {{t.accent}}; font-weight: 500">### </span>背景・想定読者</h3>
+        <p style="margin: 0">背景は OAuth の仕様は必ずしも安全というわけではなく、場合によって PKCE のような仕様も必要になることの説明にチャレンジします。想定読者は、認可コードフローについてなんとなく知っているという方向けです。</p>
+
+        <h2 id="flow" style="margin: 28px 0 0; padding-bottom: 10px; border-bottom: 1px solid {{t.rule}}; font-size: 24px; font-weight: 700; line-height: 1.5; color: {{t.text}}"><span style="color: {{t.accent}}; font-weight: 500">## </span>従来のフローと認可コード横取り</h2>
+        <p style="margin: 0">想定するシナリオは以下です。</p>
+        <ol style="margin: 0; padding-left: 1.6em; display: flex; flex-direction: column; gap: 4px">
+          <li>攻撃用のブラウザ拡張機能がすでに入っている</li>
+          <li>拡張機能が入っているブラウザで、SPA のログインボタンを押下</li>
+          <li>AS に認可リクエストが送られ、認可コードが返ってくる</li>
+          <li>ブラウザ上で認可コードを奪取されてしまう</li>
+        </ol>
+
+        <figure style="margin: 8px 0 0; display: flex; flex-direction: column; gap: 10px">
+          <div style="height: 320px; border: 1px solid {{t.rule}}; background: {{t.card}}; display: flex; align-items: center; justify-content: center; font-size: 14px; color: {{t.muted}}">[シーケンス図 — mermaid]</div>
+          <figcaption style="font-size: 13px; color: {{t.muted}}">fig.1  認可コード横取りのシーケンス</figcaption>
+        </figure>
+
+        <div style="display: flex; flex-direction: column; background: {{t.codeBg}}; color: {{t.codeFg}}; font-size: 14px; line-height: 1.75">
+          <div style="display: flex; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid {{t.codeRule}}; font-size: 12px; color: {{t.codeMuted}}"><span>sequence.mmd</span><span>mermaid</span></div>
+          <pre style="margin: 0; padding: 16px 0; font-family: 'IBM Plex Mono', 'M PLUS 1 Code', monospace; overflow: hidden"><span style="display: inline-block; width: 40px; text-align: right; padding-right: 16px; color: {{t.codeMuted}}">1</span>sequenceDiagram
+<span style="display: inline-block; width: 40px; text-align: right; padding-right: 16px; color: {{t.codeMuted}}">2</span>    participant SPA as SPA (Vue/Reactなど)
+<span style="display: inline-block; width: 40px; text-align: right; padding-right: 16px; color: {{t.codeMuted}}">3</span>    participant AS as 認可サーバー (AS)
+<span style="display: inline-block; width: 40px; text-align: right; padding-right: 16px; color: {{t.codeMuted}}">4</span>    SPA <span style="color: {{t.codeAccent}}">-&gt;&gt;</span> Browser: ログインボタン押下
+<span style="display: inline-block; width: 40px; text-align: right; padding-right: 16px; color: {{t.codeMuted}}">5</span>    Browser <span style="color: {{t.codeAccent}}">-&gt;&gt;</span> AS: 認可リクエスト送信</pre>
+        </div>
+
+        <h2 id="pkce" style="margin: 28px 0 0; padding-bottom: 10px; border-bottom: 1px solid {{t.rule}}; font-size: 24px; font-weight: 700; line-height: 1.5; color: {{t.text}}"><span style="color: {{t.accent}}; font-weight: 500">## </span>PKCEを眺めてみる</h2>
+        <p style="margin: 0; color: {{t.muted}}">[本文が続きます]</p>
+      </article>
+
+      <aside style="display: flex; flex-direction: column; gap: 14px">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}">CONTENTS</h2>
+        <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-left: 1px solid {{t.rule}}; font-size: 14px; line-height: 1.6">
+          <li><a href="#bg" style="display: block; padding: 8px 0 8px 28px; color: {{t.body}}; text-decoration: none">背景・想定読者</a></li>
+          <li><a href="#flow" style="display: block; padding: 8px 0 8px 16px; margin-left: -1px; border-left: 2px solid {{t.accent}}; color: {{t.text}}; font-weight: 700; text-decoration: none">従来のフローと認可コード横取り</a></li>
+          <li><a href="#pkce" style="display: block; padding: 8px 0 8px 16px; color: {{t.body}}; text-decoration: none">PKCEを眺めてみる</a></li>
+          <li><a href="#summary" style="display: block; padding: 8px 0 8px 16px; color: {{t.body}}; text-decoration: none">まとめ</a></li>
+        </ol>
+        <a href="https://github.com/lcyou/mdblog-astro/blob/main/src/pages/posts/260614-cd9f2539.md" style="margin-top: 16px; font-size: 13px; color: {{t.muted}}; padding: 6px 0">:view source (.md)</a>
+      </aside>
+    </div>
+
+    <nav aria-label="前後の記事" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; padding-top: 32px; border-top: 1px solid {{t.text}}">
+      <a href="/posts/260526-b059efc1/" style="display: flex; flex-direction: column; gap: 8px; padding: 22px 24px; border: 1px solid {{t.rule}}; background: {{t.card}}; color: inherit; text-decoration: none">
+        <span style="font-size: 13px; color: {{t.muted}}">← HEAD~1  b059efc1</span>
+        <span style="font-size: 16px; font-weight: 700">TsKaigi2026に参加してきた</span>
+      </a>
+      <a href="/posts/260725-3b5082bd/" style="display: flex; flex-direction: column; gap: 8px; padding: 22px 24px; border: 1px solid {{t.rule}}; background: {{t.card}}; text-align: right; color: inherit; text-decoration: none">
+        <span style="font-size: 13px; color: {{t.muted}}">3b5082bd  next →</span>
+        <span style="font-size: 16px; font-weight: 700">OSSを開発していないのにAI Slopを感じた</span>
+      </a>
+    </nav>
+  </div>
+
+  <div style="flex-grow: 1"></div>
+  <footer style="width: 1040px; display: flex; justify-content: space-between; padding: 20px 0 24px; border-top: 1px solid {{t.rule}}; font-size: 14px; color: {{t.muted}}">
+    <span>lcyou</span>
+    <span>2026-06-14</span>
+    <span>260614-CD9F2539(7)</span>
+  </footer>
+
+  <div role="status" aria-label="ステータスライン" style="width: 100%; height: 36px; flex-shrink: 0; display: flex; align-items: stretch; background: {{t.bar}}; color: {{t.barText}}; font-size: 13px">
+    <span style="display: flex; align-items: center; padding: 0 14px; background: {{t.accent}}; color: {{t.bg}}; font-weight: 700">NORMAL</span>
+    <span style="display: flex; align-items: center; padding: 0 14px; gap: 8px"><span style="opacity: 0.7">main@cd9f2539</span><span>~/blog/posts/260614-cd9f2539.md</span></span>
+    <div style="flex-grow: 1"></div>
+    <span style="display: flex; align-items: center; padding: 0 14px; opacity: 0.75">markdown</span>
+    <span style="display: flex; align-items: center; padding: 0 14px; opacity: 0.75">utf-8 | ja</span>
+    <span style="display: flex; align-items: center; padding: 0 14px; background: {{t.inv}}; color: {{t.invText}}">42%</span>
+    <span style="display: flex; align-items: center; padding: 0 14px; background: {{t.accent}}; color: {{t.bg}}; font-weight: 700">12:30</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1440,"height":2320}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = (this.props.theme ?? 'light') === 'dark';
+    const t = dark
+      ? { bg: '#1c1b18', card: '#24231f', text: '#e8e2cc', body: '#cfc8b0', muted: '#9c967f', rule: '#3a3830', leader: '#4a473d', inv: '#e8e2cc', invText: '#1c1b18', accent: '#e8916f', bar: '#2a2925', barText: '#cfc8b0', codeBg: '#121110', codeFg: '#e8e2cc', codeMuted: '#8a8574', codeRule: '#2a2925', codeAccent: '#e8916f' }
+      : { bg: '#f7f2e2', card: '#fbf8ee', text: '#2f2d28', body: '#46443c', muted: '#6b685d', rule: '#ddd5bb', leader: '#c9c0a2', inv: '#2f2d28', invText: '#f7f2e2', accent: '#a8452f', bar: '#2f2d28', barText: '#e8e2cc', codeBg: '#2f2d28', codeFg: '#eee8d5', codeMuted: '#9c967f', codeRule: '#46443c', codeAccent: '#e8a07c' };
+    return { t, isDark: dark, isLight: !dark };
+  }
+}
+</script>
+</body>
+</html>

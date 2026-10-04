@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>記事ページ スマホ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=M+PLUS+1+Code:wght@400;500;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 2560px; box-sizing: border-box; background: {{t.bg}}; color: {{t.text}}; font-family: 'IBM Plex Mono', 'M PLUS 1 Code', monospace; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="padding: 0 16px; border-bottom: 1px solid {{t.rule}}; display: flex; flex-direction: column">
+    <div style="display: flex; align-items: center; height: 52px; font-size: 13px; color: {{t.muted}}">
+      <span style="flex-grow: 1">260614-CD9F2539(7)</span>
+      <a href="/search/" aria-label="検索" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: {{t.text}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></a>
+      <button type="button" aria-label="テーマを切り替え" style="width: 44px; height: 44px; margin-right: -10px; display: flex; align-items: center; justify-content: center; background: transparent; border: 0; color: {{t.text}}; cursor: pointer">
+        <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+        <sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+      </button>
+    </div>
+    <nav aria-label="メイン" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding-bottom: 12px; font-size: 14px">
+      <a href="/" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">home</a>
+      <a href="/blog/" aria-current="page" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.inv}}; background: {{t.inv}}; color: {{t.invText}}; text-decoration: none">blog</a>
+      <a href="/about/" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">about</a>
+      <a href="/tags/" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">tags</a>
+    </nav>
+  </header>
+
+  <div style="padding: 28px 16px 0; display: flex; flex-direction: column; gap: 22px">
+
+    <header style="display: flex; flex-direction: column; gap: 10px">
+      <h1 style="margin: 0; font-size: 24px; font-weight: 700; line-height: 1.5">認可コードの横取り攻撃対策でのPKCE</h1>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: {{t.muted}}"><time datetime="2026-06-14">2026-06-14</time><span style="color: {{t.accent}}">cd9f2539</span><span>[読了時間]</span></div>
+    </header>
+
+    <details style="border-top: 1px solid {{t.rule}}; border-bottom: 1px solid {{t.rule}}">
+      <summary style="min-height: 44px; display: flex; align-items: center; font-size: 13px; color: {{t.muted}}; cursor: pointer">:toc  目次（4）</summary>
+      <ol style="list-style: none; margin: 0; padding: 0 16px 10px; display: flex; flex-direction: column; font-size: 14px; line-height: 1.6">
+        <li><a href="#bg" style="display: block; padding: 8px 0 8px 14px; color: {{t.body}}; text-decoration: none">背景・想定読者</a></li>
+        <li><a href="#flow" style="display: block; padding: 8px 0; color: {{t.text}}; font-weight: 700; text-decoration: none"><span style="color: {{t.accent}}">&gt; </span>従来のフローと認可コード横取り</a></li>
+        <li><a href="#pkce" style="display: block; padding: 8px 0; color: {{t.body}}; text-decoration: none">PKCEを眺めてみる</a></li>
+        <li><a href="#summary" style="display: block; padding: 8px 0; color: {{t.body}}; text-decoration: none">まとめ</a></li>
+      </ol>
+    </details>
+
+    <article style="display: flex; flex-direction: column; gap: 18px; font-size: 15px; line-height: 2.05; color: {{t.body}}">
+      <p style="margin: 0">認可コード横取り攻撃とは、パブリッククライアント（モバイルアプリや SPA など）で悪意のあるアプリが認可コードを盗み出し、アクセストークンを不正に取得する攻撃手法です。</p>
+      <p style="margin: 0">今回は認可コード横取り攻撃と PKCE（RFC7636 で OAuth の拡張仕様として定義されている）を使うことで対策されていることを確認し、個人的に思う PKCE のききどころについてまとめます。</p>
+
+      <h3 id="bg" style="margin: 12px 0 0; font-size: 16px; font-weight: 700; line-height: 1.6; color: {{t.text}}"><span style="color: {{t.accent}}; font-weight: 500">### </span>背景・想定読者</h3>
+      <p style="margin: 0">背景は OAuth の仕様は必ずしも安全というわけではなく、場合によって PKCE のような仕様も必要になることの説明にチャレンジします。想定読者は、認可コードフローについてなんとなく知っているという方向けです。</p>
+
+      <h2 id="flow" style="margin: 20px 0 0; padding-bottom: 8px; border-bottom: 1px solid {{t.rule}}; font-size: 20px; font-weight: 700; line-height: 1.5; color: {{t.text}}"><span style="color: {{t.accent}}; font-weight: 500">## </span>従来のフローと認可コード横取り</h2>
+      <p style="margin: 0">想定するシナリオは以下です。</p>
+      <ol style="margin: 0; padding-left: 1.5em; display: flex; flex-direction: column; gap: 2px">
+        <li>攻撃用のブラウザ拡張機能がすでに入っている</li>
+        <li>拡張機能が入っているブラウザで、SPA のログインボタンを押下</li>
+        <li>AS に認可リクエストが送られ、認可コードが返ってくる</li>
+        <li>ブラウザ上で認可コードを奪取されてしまう</li>
+      </ol>
+
+      <figure style="margin: 4px 0 0; display: flex; flex-direction: column; gap: 8px">
+        <div style="height: 240px; border: 1px solid {{t.rule}}; background: {{t.card}}; display: flex; align-items: center; justify-content: center; font-size: 13px; color: {{t.muted}}">[シーケンス図 — mermaid]</div>
+        <figcaption style="font-size: 12px; color: {{t.muted}}">fig.1  認可コード横取りのシーケンス</figcaption>
+      </figure>
+
+      <div style="display: flex; flex-direction: column; margin: 0 -16px; background: {{t.codeBg}}; color: {{t.codeFg}}; font-size: 12px; line-height: 1.75">
+        <div style="display: flex; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid {{t.codeRule}}; font-size: 11px; color: {{t.codeMuted}}"><span>sequence.mmd</span><span>mermaid</span></div>
+        <pre style="margin: 0; padding: 12px 16px 12px 0; font-family: 'IBM Plex Mono', 'M PLUS 1 Code', monospace; overflow-x: auto"><span style="display: inline-block; width: 32px; text-align: right; padding-right: 12px; color: {{t.codeMuted}}">1</span>sequenceDiagram
+<span style="display: inline-block; width: 32px; text-align: right; padding-right: 12px; color: {{t.codeMuted}}">2</span>  participant AS as 認可サーバー
+<span style="display: inline-block; width: 32px; text-align: right; padding-right: 12px; color: {{t.codeMuted}}">3</span>  SPA <span style="color: {{t.codeAccent}}">-&gt;&gt;</span> Browser: ログイン押下
+<span style="display: inline-block; width: 32px; text-align: right; padding-right: 12px; color: {{t.codeMuted}}">4</span>  Browser <span style="color: {{t.codeAccent}}">-&gt;&gt;</span> AS: 認可リクエスト</pre>
+      </div>
+
+      <h2 id="pkce" style="margin: 20px 0 0; padding-bottom: 8px; border-bottom: 1px solid {{t.rule}}; font-size: 20px; font-weight: 700; line-height: 1.5; color: {{t.text}}"><span style="color: {{t.accent}}; font-weight: 500">## </span>PKCEを眺めてみる</h2>
+      <p style="margin: 0; color: {{t.muted}}">[本文が続きます]</p>
+    </article>
+
+    <ul aria-label="タグ" style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px">
+      <li><a href="/tags/tech/" style="display: inline-block; padding: 10px; border: 1px solid {{t.rule}}; color: {{t.accent}}; text-decoration: none">#tech</a></li>
+      <li><a href="/tags/PKCE/" style="display: inline-block; padding: 10px; border: 1px solid {{t.rule}}; color: {{t.accent}}; text-decoration: none">#PKCE</a></li>
+      <li><a href="/tags/OAuth/" style="display: inline-block; padding: 10px; border: 1px solid {{t.rule}}; color: {{t.accent}}; text-decoration: none">#OAuth</a></li>
+      <li><a href="/tags/OIDC/" style="display: inline-block; padding: 10px; border: 1px solid {{t.rule}}; color: {{t.accent}}; text-decoration: none">#OIDC</a></li>
+    </ul>
+
+    <nav aria-label="前後の記事" style="display: flex; flex-direction: column; gap: 10px; padding-top: 24px; border-top: 1px solid {{t.text}}">
+      <a href="/posts/260526-b059efc1/" style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid {{t.rule}}; background: {{t.card}}; color: inherit; text-decoration: none">
+        <span style="font-size: 12px; color: {{t.muted}}">← HEAD~1  b059efc1</span>
+        <span style="font-size: 15px; font-weight: 700">TsKaigi2026に参加してきた</span>
+      </a>
+      <a href="/posts/260725-3b5082bd/" style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid {{t.rule}}; background: {{t.card}}; text-align: right; color: inherit; text-decoration: none">
+        <span style="font-size: 12px; color: {{t.muted}}">3b5082bd  next →</span>
+        <span style="font-size: 15px; font-weight: 700">OSSを開発していないのにAI Slopを感じた</span>
+      </a>
+    </nav>
+  </div>
+
+  <div style="flex-grow: 1"></div>
+  <footer style="margin: 0 16px; display: flex; justify-content: space-between; padding: 16px 0 20px; font-size: 12px; color: {{t.muted}}">
+    <span>lcyou</span>
+    <span>2026-06-14</span>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":2560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = (this.props.theme ?? 'light') === 'dark';
+    const t = dark
+      ? { bg: '#1c1b18', card: '#24231f', text: '#e8e2cc', body: '#cfc8b0', muted: '#9c967f', rule: '#3a3830', inv: '#e8e2cc', invText: '#1c1b18', accent: '#e8916f', bar: '#2a2925', barText: '#cfc8b0', codeBg: '#121110', codeFg: '#e8e2cc', codeMuted: '#8a8574', codeRule: '#2a2925', codeAccent: '#e8916f' }
+      : { bg: '#f7f2e2', card: '#fbf8ee', text: '#2f2d28', body: '#46443c', muted: '#6b685d', rule: '#ddd5bb', inv: '#2f2d28', invText: '#f7f2e2', accent: '#a8452f', bar: '#2f2d28', barText: '#e8e2cc', codeBg: '#2f2d28', codeFg: '#eee8d5', codeMuted: '#9c967f', codeRule: '#46443c', codeAccent: '#e8a07c' };
+    return { t, isDark: dark, isLight: !dark };
+  }
+}
+</script>
+</body>
+</html>

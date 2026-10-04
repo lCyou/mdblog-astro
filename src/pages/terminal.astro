@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Terminal from '@/components/Terminal';
+---
+
+<BaseLayout
+  pageTitle="Terminal"
+  description="lcyou のブログをコマンドで歩き回れる対話ターミナル。"
+  manTitle="TERMINAL(1)"
+  status={{ path: '~/blog/terminal', info: ['xterm'] }}
+  noindex
+>
+  <main class="container wrap">
+    <h1 class="sr-only">Terminal</h1>
+    <p class="hint muted">`help` でコマンド一覧。<a href="/">通常の表示に戻る</a></p>
+    <div class="terminal-container">
+      <Terminal client:only="preact" />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .wrap {
+    padding-top: 24px;
+    padding-bottom: 32px;
+  }
+
+  .hint {
+    margin: 0 0 12px;
+    font-size: 13px;
+  }
+
+  .terminal-container {
+    height: min(72vh, 760px);
+    padding: 16px;
+    background: #0d0c0c;
+  }
+
+  @media (max-width: 767px) {
+    .terminal-container {
+      height: 70vh;
+      padding: 8px;
+    }
+  }
+</style>

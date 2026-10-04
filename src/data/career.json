@@ -3,7 +3,7 @@
     {
       "id": "proj-2026",
       "type": "project",
-      "title": "個人ブログサイトの作りました！",
+      "title": "個人ブログサイトを作りました！",
       "period": "2026年2月",
       "description": "Astroを使用した個人ブログサイトの開発。MarkdownベースのCMS、ダークモード対応、Cloudflare Workersへのデプロイを実装。",
       "url": "https://github.com/lcyou/mdblog-astro"

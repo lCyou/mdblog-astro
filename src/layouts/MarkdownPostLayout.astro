@@ -1,286 +1,839 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { Icon } from 'astro-icon/components';
-import TableOfContents from '@/components/TableOfContents.astro';
+import { getNeighbors, slugToHash, toDateString } from '@/utils/posts';
+import { siteConfig } from '@/data/seo';
 
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const lastModified = dayjs(Astro.props.frontmatter.lastModified)
-  .tz("Asia/Tokyo")
-  .format("YYYY-MM-DD");
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
 
-const { frontmatter, headings } = Astro.props;
-const { minutesRead } = Astro.props.frontmatter;
+const { frontmatter, headings = [] } = Astro.props as {
+  frontmatter: {
+    title: string;
+    description?: string;
+    author?: string;
+    pubDate: string | Date;
+    tags: string[];
+    minutesRead?: string;
+    lastModified?: string;
+  };
+  headings?: Heading[];
+};
 
-// SEO用の情報を準備
+const slug = Astro.url.pathname.split('/').filter(Boolean).pop()?.replace('.html', '') ?? '';
+const hash = slugToHash(slug);
+const published = toDateString(frontmatter.pubDate);
+const modified = frontmatter.lastModified
+  ? dayjs(frontmatter.lastModified).tz('Asia/Tokyo').format('YYYY-MM-DD')
+  : undefined;
+const author = frontmatter.author ?? siteConfig.author;
 const description = frontmatter.description || frontmatter.title;
+const tags = frontmatter.tags ?? [];
+const { prev, next } = getNeighbors(slug);
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 
-// ブログ記事のスラッグを取得（URLパスから）
-const slug = Astro.url.pathname.split('/').filter(Boolean).pop()?.replace('.html', '');
-
-// Satori生成のOG画像URLを構築
-const siteUrl = Astro.site?.href.replace(/\/$/, '') || 'https://blog.lcyou.me';
+// Satori で生成した OG 画像
+const siteUrl = Astro.site?.href.replace(/\/$/, '') || siteConfig.url;
 const ogImage = slug ? `${siteUrl}/og/${slug}.png` : undefined;
 const ogImageAlt = `${frontmatter.title}のOGイメージ`;
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+const manTitle = `${slug.toUpperCase()}(7)`;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: frontmatter.title,
+    description,
+    url: pageUrl,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+    datePublished: published,
+    ...(modified && { dateModified: modified }),
+    author: { '@type': 'Person', name: author, url: `${siteUrl}/about/` },
+    publisher: { '@type': 'Person', name: siteConfig.author, url: `${siteUrl}/about/` },
+    ...(ogImage && { image: ogImage }),
+    keywords: tags.join(', '),
+    inLanguage: 'ja',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'home', item: `${siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'blog', item: `${siteUrl}/blog/` },
+      { '@type': 'ListItem', position: 3, name: frontmatter.title, item: pageUrl },
+    ],
+  },
+];
 ---
-<BaseLayout 
-  pageTitle={frontmatter.title} 
-  description={description} 
+
+<BaseLayout
+  pageTitle={frontmatter.title}
+  description={description}
   ogImage={ogImage}
   ogImageAlt={ogImageAlt}
-  article={true}
+  manTitle={manTitle}
+  current="blog"
+  footerCenter={published}
+  status={{ path: `~/blog/posts/${slug}.md`, branch: `main@${hash}`, info: ['markdown'] }}
+  article={{ publishedTime: published, modifiedTime: modified, tags }}
+  jsonLd={jsonLd}
 >
   {ogImage && <meta slot="head" data-pagefind-meta="image[content]" content={ogImage} />}
-  <article data-pagefind-body>
-  <div class="post-header">
-    <h1 class="title">{frontmatter.title}</h1>
-    <div class="meta">
-      <p>
-        Author: {frontmatter.author}
-        , {minutesRead}
-        ,<Icon name="mdi:language-markdown-outline" class="icon" />
-      </p>
-      <p style="display: flex; justify-content: center;">
-        Published: {frontmatter.pubDate.toString().slice(0,10)} / Last modified: {lastModified}
-      </p>
-    </div>
-    <div class="tags">
-      <Icon name="mdi:tag-multiple-outline" class="icon" />
-      {frontmatter.tags.map((tag: string) => (
-        <p class="tag">#<a href={`/tags/${tag}`}>{tag}</a></p>
-      ))}
-    </div>
-  </div>
-  <TableOfContents headings={headings} />
-  <slot />
-  </article>
+
+  <main class="container post">
+    <nav aria-label="パンくずリスト" class="breadcrumb">
+      <ol>
+        <li><a href="/">~</a>/</li>
+        <li><a href="/blog/">blog</a>/</li>
+        <li><a href="/blog/">posts</a>/</li>
+        <li aria-current="page">{slug}.md</li>
+      </ol>
+    </nav>
+
+    <article data-pagefind-body>
+      <header class="post-header">
+        <h1>{frontmatter.title}</h1>
+        {frontmatter.description && <p class="lead">{frontmatter.description}</p>}
+        <dl class="meta">
+          <div class="meta-hash"><dt>commit</dt><dd class="accent">{hash}</dd></div>
+          <div class="meta-author"><dt>author</dt><dd><a href="/about/">{author}</a></dd></div>
+          <div class="meta-date"><dt>date</dt><dd><time datetime={published}>{published}</time></dd></div>
+          {modified && modified !== published && (
+            <div class="meta-modified"><dt>modified</dt><dd><time datetime={modified}>{modified}</time></dd></div>
+          )}
+          {frontmatter.minutesRead && (
+            <div class="meta-read"><dt>read</dt><dd>{frontmatter.minutesRead}</dd></div>
+          )}
+        </dl>
+        <ul class="tags tags-top" aria-label="タグ" data-pagefind-ignore>
+          {tags.map((tag) => <li><a href={`/tags/${tag}/`}>#{tag}</a></li>)}
+        </ul>
+      </header>
+
+      {
+        toc.length > 0 && (
+          <details class="toc-mobile" data-pagefind-ignore>
+            <summary>:toc  目次（{toc.length}）</summary>
+            <ol>
+              {toc.map((h) => (
+                <li class={`depth-${h.depth}`}>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        )
+      }
+
+      <div class="post-grid">
+        <div class="post-body">
+          <slot />
+        </div>
+
+        {
+          toc.length > 0 && (
+            <aside class="toc" aria-labelledby="toc-label" data-pagefind-ignore>
+              <div class="toc-inner">
+                <h2 id="toc-label">CONTENTS</h2>
+                <ol>
+                  {toc.map((h) => (
+                    <li class={`depth-${h.depth}`}>
+                      <a href={`#${h.slug}`} data-toc-link={h.slug}>
+                        {h.text}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+                <a
+                  class="view-source"
+                  href={`https://github.com/lcyou/mdblog-astro/blob/main/src/pages/posts/${slug}.md`}
+                >
+                  :view source (.md)
+                </a>
+              </div>
+            </aside>
+          )
+        }
+      </div>
+
+      <ul class="tags tags-bottom" aria-label="タグ" data-pagefind-ignore>
+        {tags.map((tag) => <li><a href={`/tags/${tag}/`}>#{tag}</a></li>)}
+      </ul>
+    </article>
+
+    {
+      (prev || next) && (
+        <nav aria-label="前後の記事" class="pager">
+          {prev ? (
+            <a href={prev.url} rel="prev" class="pager-prev">
+              <span class="pager-meta">← HEAD~1  {prev.hash}</span>
+              <span class="pager-title">{prev.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {next && (
+            <a href={next.url} rel="next" class="pager-next">
+              <span class="pager-meta">{next.hash}  next →</span>
+              <span class="pager-title">{next.title}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+  </main>
 </BaseLayout>
 
 <script>
-import mermaid from 'mermaid';
+  import mermaid from 'mermaid';
 
-const LIGHT_VARS = {
-  background: '#f9f5d7',
-  mainBkg: '#e8e4c6',
-  nodeBorder: '#aeac99',
-  clusterBkg: '#f9f5d7',
-  titleColor: '#33312d',
-  edgeLabelBackground: '#f9f5d7',
-  primaryColor: '#e8e4c6',
-  primaryTextColor: '#33312d',
-  primaryBorderColor: '#aeac99',
-  lineColor: '#605d52',
-  secondaryColor: '#f9f5d7',
-  tertiaryColor: '#e8e4c6',
-  actorBkg: '#e8e4c6',
-  actorBorder: '#aeac99',
-  actorTextColor: '#33312d',
-  actorLineColor: '#605d52',
-  signalColor: '#605d52',
-  signalTextColor: '#33312d',
-  labelBoxBkgColor: '#e8e4c6',
-  labelBoxBorderColor: '#aeac99',
-  labelTextColor: '#33312d',
-  loopTextColor: '#33312d',
-  noteBorderColor: '#f3927e',
-  noteBkgColor: '#f9f5d7',
-  noteTextColor: '#605d52',
-  activationBorderColor: '#f3927e',
-  activationBkgColor: '#f9f5d7',
-};
+  const LIGHT_VARS = {
+    background: '#f7f2e2',
+    mainBkg: '#fbf8ee',
+    nodeBorder: '#c9c0a2',
+    clusterBkg: '#f7f2e2',
+    titleColor: '#2f2d28',
+    edgeLabelBackground: '#f7f2e2',
+    primaryColor: '#fbf8ee',
+    primaryTextColor: '#2f2d28',
+    primaryBorderColor: '#c9c0a2',
+    lineColor: '#6b685d',
+    secondaryColor: '#f7f2e2',
+    tertiaryColor: '#fbf8ee',
+    actorBkg: '#fbf8ee',
+    actorBorder: '#c9c0a2',
+    actorTextColor: '#2f2d28',
+    actorLineColor: '#6b685d',
+    signalColor: '#46443c',
+    signalTextColor: '#2f2d28',
+    labelBoxBkgColor: '#fbf8ee',
+    labelBoxBorderColor: '#c9c0a2',
+    labelTextColor: '#2f2d28',
+    loopTextColor: '#2f2d28',
+    noteBorderColor: '#a8452f',
+    noteBkgColor: '#f7f2e2',
+    noteTextColor: '#46443c',
+    activationBorderColor: '#a8452f',
+    activationBkgColor: '#f7f2e2',
+    fontFamily: "'IBM Plex Mono', 'M PLUS 1 Code', monospace",
+  };
 
-const DARK_VARS = {
-  background: '#33312d',
-  mainBkg: '#605d52',
-  nodeBorder: '#2a2a2a',
-  clusterBkg: '#33312d',
-  titleColor: '#fdf6e3',
-  edgeLabelBackground: '#33312d',
-  primaryColor: '#605d52',
-  primaryTextColor: '#fdf6e3',
-  primaryBorderColor: '#2a2a2a',
-  lineColor: '#fdf6e3',
-  secondaryColor: '#33312d',
-  tertiaryColor: '#605d52',
-  actorBkg: '#605d52',
-  actorBorder: '#2a2a2a',
-  actorTextColor: '#fdf6e3',
-  actorLineColor: '#fdf6e3',
-  signalColor: '#fdf6e3',
-  signalTextColor: '#fdf6e3',
-  labelBoxBkgColor: '#605d52',
-  labelBoxBorderColor: '#2a2a2a',
-  labelTextColor: '#fdf6e3',
-  loopTextColor: '#fdf6e3',
-  noteBorderColor: '#f3927e',
-  noteBkgColor: '#33312d',
-  noteTextColor: '#fdf6e3',
-  activationBorderColor: '#f3927e',
-  activationBkgColor: '#33312d',
-};
+  const DARK_VARS = {
+    background: '#1c1b18',
+    mainBkg: '#24231f',
+    nodeBorder: '#4a473d',
+    clusterBkg: '#1c1b18',
+    titleColor: '#e8e2cc',
+    edgeLabelBackground: '#1c1b18',
+    primaryColor: '#24231f',
+    primaryTextColor: '#e8e2cc',
+    primaryBorderColor: '#4a473d',
+    lineColor: '#cfc8b0',
+    secondaryColor: '#1c1b18',
+    tertiaryColor: '#24231f',
+    actorBkg: '#24231f',
+    actorBorder: '#4a473d',
+    actorTextColor: '#e8e2cc',
+    actorLineColor: '#9c967f',
+    signalColor: '#cfc8b0',
+    signalTextColor: '#e8e2cc',
+    labelBoxBkgColor: '#24231f',
+    labelBoxBorderColor: '#4a473d',
+    labelTextColor: '#e8e2cc',
+    loopTextColor: '#e8e2cc',
+    noteBorderColor: '#e8916f',
+    noteBkgColor: '#1c1b18',
+    noteTextColor: '#cfc8b0',
+    activationBorderColor: '#e8916f',
+    activationBkgColor: '#1c1b18',
+    fontFamily: "'IBM Plex Mono', 'M PLUS 1 Code', monospace",
+  };
 
-function isDark() {
-  return document.documentElement.classList.contains('dark');
-}
+  const isDark = () => document.documentElement.classList.contains('dark');
 
-function getMermaidConfig() {
-  return {
+  const getMermaidConfig = () => ({
     startOnLoad: false,
     theme: 'base' as const,
     themeVariables: isDark() ? DARK_VARS : LIGHT_VARS,
-  };
-}
+  });
 
-// graph definitions keyed by container id for re-render on theme toggle
-const graphStore = new Map<string, string>();
+  // テーマ切り替え時に描き直すため、図の定義を保持する
+  const graphStore = new Map<string, string>();
 
-async function renderAll() {
-  mermaid.initialize(getMermaidConfig());
-
-  for (const [containerId, definition] of graphStore) {
-    const container = document.getElementById(containerId);
-    if (!container) continue;
-    const { svg } = await mermaid.render(`svg-${containerId}`, definition);
-    container.innerHTML = svg;
-  }
-}
-
-async function initMermaidBlocks() {
-  mermaid.initialize(getMermaidConfig());
-
-  const mermaidBlocks = document.querySelectorAll<HTMLElement>(
-    'pre[data-language="mermaid"], pre:has(code.language-mermaid)'
-  );
-
-  for (const pre of mermaidBlocks) {
-    const code = pre.querySelector('code');
-    if (!code) continue;
-
-    const definition = code.innerText;
-    const containerId = `mermaid-${Math.random().toString(36).slice(2)}`;
-    graphStore.set(containerId, definition);
-
-    const container = document.createElement('div');
-    container.id = containerId;
-    container.classList.add('mermaid-diagram');
-
-    const { svg } = await mermaid.render(`svg-${containerId}`, definition);
-    container.innerHTML = svg;
-
-    pre.replaceWith(container);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', initMermaidBlocks);
-
-// Re-render with new theme when dark mode is toggled
-const observer = new MutationObserver((mutations) => {
-  for (const m of mutations) {
-    if (m.type === 'attributes' && m.attributeName === 'class') {
-      renderAll();
+  async function renderAll() {
+    mermaid.initialize(getMermaidConfig());
+    for (const [containerId, definition] of graphStore) {
+      const container = document.getElementById(containerId);
+      if (!container) continue;
+      const { svg } = await mermaid.render(`svg-${containerId}`, definition);
+      container.innerHTML = svg;
     }
   }
-});
-observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+  async function initMermaidBlocks() {
+    const blocks = document.querySelectorAll<HTMLElement>('pre[data-language="mermaid"], pre:has(code.language-mermaid)');
+    if (blocks.length === 0) return;
+    mermaid.initialize(getMermaidConfig());
+
+    for (const pre of blocks) {
+      const code = pre.querySelector('code');
+      if (!code) continue;
+
+      const definition = Array.from(code.querySelectorAll('.line'))
+        .map((line) => line.textContent ?? '')
+        .join('\n') || code.innerText;
+      const containerId = `mermaid-${Math.random().toString(36).slice(2)}`;
+      graphStore.set(containerId, definition);
+
+      const container = document.createElement('div');
+      container.id = containerId;
+      container.classList.add('mermaid-diagram');
+      const { svg } = await mermaid.render(`svg-${containerId}`, definition);
+      container.innerHTML = svg;
+      pre.replaceWith(container);
+    }
+
+    new MutationObserver(() => renderAll()).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+  }
+
+  // 目次: いま読んでいる見出しを強調
+  function initTocHighlight() {
+    const links = new Map<string, HTMLElement>();
+    document.querySelectorAll<HTMLElement>('[data-toc-link]').forEach((a) => links.set(a.dataset.tocLink!, a));
+    if (links.size === 0) return;
+
+    const headings = [...links.keys()]
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => !!el);
+
+    const update = () => {
+      let current = headings[0];
+      for (const h of headings) {
+        if (h.getBoundingClientRect().top < 120) current = h;
+      }
+      links.forEach((a, id) => {
+        if (id === current?.id) a.setAttribute('aria-current', 'location');
+        else a.removeAttribute('aria-current');
+      });
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+
+  initMermaidBlocks();
+  initTocHighlight();
 </script>
 
 <style>
-  :global(.mermaid-diagram) {
+  .post {
+    padding-top: 40px;
+    padding-bottom: 64px;
+  }
+
+  /* ---------- breadcrumb */
+  .breadcrumb ol {
+    list-style: none;
+    margin: 0 0 36px;
+    padding: 0;
     display: flex;
-    justify-content: center;
-    margin: 2rem 0;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: var(--muted);
   }
 
-  :global(.mermaid-diagram svg) {
-    max-width: 100%;
-    height: auto;
+  .breadcrumb li[aria-current] {
+    color: var(--text);
   }
-</style>
 
-<style>
+  /* ---------- header */
   .post-header {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    gap: 18px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--text);
   }
 
-  .title {
-    text-decoration-line: underline;
-    text-decoration-color: var(--color-accent);
-    text-underline-offset: 0.3em;
-    text-decoration-thickness: 4px;
+  .post-header h1 {
+    margin: 0;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+  }
+
+  .lead {
+    margin: 0;
+    max-width: 780px;
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--body);
   }
 
   .meta {
-    text-align: center;
-    color: var(--color-text-secondary);
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    font-size: 14px;
   }
 
-  :global(h2) {
-    border-left: 12px solid var(--color-accent);
-    padding-left: 1em;
-    margin-left: 0;
-    margin-top: 4rem;
+  .meta div {
+    display: flex;
+    gap: 8px;
   }
 
-  :global(h3) {
-    border-left: 3px solid var(--color-accent);
-    padding-left: 1em;
-    margin-left: 0;
-    margin-top: 2rem;
+  .meta dt {
+    color: var(--muted);
   }
 
-  :global(h4) {
-    font-size: 1.1em;
-    padding-left: 1em;
-    margin-left: 0;
-    margin-top: 1rem;
-    position: relative;
-  }
-
-  :global(h4::before) {
-    content: "●";
-    color: var(--color-accent);
-    position: absolute;
-    left: 0;
-    font-size: 0.6em;
-    top: 0.5em;
+  .meta dd {
+    margin: 0;
   }
 
   .tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5em;
-    align-items: center;
+    gap: 8px;
+    font-size: 14px;
   }
 
-  .tag {
-    margin: 0;
-    font-size: 0.75em;
-    border: 2px solid var(--color-border);
-    border-radius: 0.5em;
-    padding: 0.5em;
-    background-color: var(--color-card-bg);
-    transition: all 0.2s ease;
-  }
-
-  .tag:hover {
-    border-color: var(--color-accent);
-    transform: translateY(-2px);
-  }
-
-  .tag a {
-    color: var(--color-text);
+  .tags a {
+    display: inline-block;
+    padding: 6px 10px;
+    border: 1px solid var(--rule);
+    color: var(--accent);
     text-decoration: none;
   }
 
-  .tag:hover a {
-    color: var(--color-accent);
+  .tags a:hover {
+    border-color: var(--accent);
+  }
+
+  .tags-bottom,
+  .toc-mobile {
+    display: none;
+  }
+
+  /* ---------- body + toc */
+  .post-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 72px;
+    padding-top: 36px;
+  }
+
+  .toc-inner {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .toc h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--rule);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .toc a {
+    display: block;
+    padding: 8px 0 8px 16px;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--body);
+    text-decoration: none;
+  }
+
+  .toc .depth-3 a {
+    padding-left: 28px;
+  }
+
+  .toc a:hover {
+    color: var(--accent);
+  }
+
+  .toc a[aria-current] {
+    border-left-color: var(--accent);
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .view-source {
+    margin-top: 16px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ---------- pager */
+  .pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--text);
+  }
+
+  .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 22px 24px;
+    border: 1px solid var(--rule);
+    background: var(--card);
+    text-decoration: none;
+  }
+
+  .pager a:hover {
+    border-color: var(--accent);
+  }
+
+  .pager-next {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .pager-meta {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: pre;
+  }
+
+  .pager-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* ---------- 本文（Markdown） */
+  .post-body {
+    max-width: 720px;
+    font-size: 16px;
+    line-height: 2.05;
+    color: var(--body);
+    overflow-wrap: anywhere;
+  }
+
+  .post-body > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  .post-body :global(p) {
+    margin: 0 0 22px;
+  }
+
+  .post-body :global(h2),
+  .post-body :global(h3),
+  .post-body :global(h4) {
+    color: var(--text);
+    font-weight: 700;
+    line-height: 1.5;
+    scroll-margin-top: 24px;
+  }
+
+  .post-body :global(h2) {
+    margin: 56px 0 22px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 24px;
+  }
+
+  .post-body :global(h3) {
+    margin: 40px 0 18px;
+    font-size: 18px;
+  }
+
+  .post-body :global(h4) {
+    margin: 32px 0 14px;
+    font-size: 16px;
+  }
+
+  .post-body :global(h2::before) {
+    content: '## ';
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .post-body :global(h3::before) {
+    content: '### ';
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .post-body :global(h4::before) {
+    content: '#### ';
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .post-body :global(a) {
+    color: var(--accent);
+  }
+
+  .post-body :global(strong) {
+    color: var(--text);
+  }
+
+  .post-body :global(ul),
+  .post-body :global(ol) {
+    margin: 0 0 22px;
+    padding-left: 1.6em;
+  }
+
+  .post-body :global(ul) {
+    list-style: '- ';
+  }
+
+  .post-body :global(li::marker) {
+    color: var(--muted);
+  }
+
+  .post-body :global(blockquote) {
+    margin: 0 0 22px;
+    padding: 4px 0 4px 20px;
+    border-left: 2px solid var(--rule);
+    color: var(--muted);
+  }
+
+  .post-body :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .post-body :global(:not(pre) > code) {
+    padding: 1px 6px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    font-size: 0.9em;
+  }
+
+  .post-body :global(pre) {
+    margin: 0 0 22px;
+  }
+
+  .post-body :global(img) {
+    display: block;
+    margin: 0 auto;
+    border: 1px solid var(--rule);
+  }
+
+  .post-body :global(hr) {
+    border: 0;
+    border-top: 1px dashed var(--rule);
+    margin: 40px 0;
+  }
+
+  .post-body :global(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0 0 22px;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .post-body :global(th),
+  .post-body :global(td) {
+    padding: 8px 12px;
+    border: 1px solid var(--rule);
+    text-align: left;
+  }
+
+  .post-body :global(th) {
+    background: var(--card);
+    color: var(--text);
+  }
+
+  .post-body :global(.mermaid-diagram) {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0 22px;
+    padding: 16px;
+    border: 1px solid var(--rule);
+    background: var(--card);
+    overflow-x: auto;
+  }
+
+  .post-body :global(.mermaid-diagram svg) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* ---------- mobile */
+  @media (max-width: 1023px) {
+    .post-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .toc {
+      display: none;
+    }
+
+    .toc-mobile {
+      display: block;
+      margin-top: 22px;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .toc-mobile summary {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: pre;
+    }
+
+    .toc-mobile ol {
+      list-style: none;
+      margin: 0;
+      padding: 0 0 10px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .toc-mobile a {
+      display: block;
+      padding: 8px 0;
+      color: var(--body);
+      text-decoration: none;
+    }
+
+    .toc-mobile .depth-3 a {
+      padding-left: 14px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .post {
+      padding-top: 28px;
+      padding-bottom: 48px;
+    }
+
+    .breadcrumb,
+    .lead,
+    .meta .meta-author,
+    .meta .meta-modified,
+    .meta dt,
+    .tags-top {
+      display: none;
+    }
+
+    .post-header {
+      gap: 10px;
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .post-header h1 {
+      font-size: 24px;
+      line-height: 1.5;
+    }
+
+    .meta {
+      gap: 4px 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .meta-date {
+      order: -1;
+    }
+
+    .post-grid {
+      padding-top: 22px;
+    }
+
+    .post-body {
+      font-size: 15px;
+    }
+
+    .post-body :global(p) {
+      margin-bottom: 18px;
+    }
+
+    .post-body :global(h2) {
+      margin-top: 40px;
+      font-size: 20px;
+    }
+
+    .post-body :global(h3) {
+      font-size: 16px;
+    }
+
+    .post-body :global(pre.astro-code) {
+      margin-left: calc(var(--gutter) * -1);
+      margin-right: calc(var(--gutter) * -1);
+      font-size: 12px;
+    }
+
+    .post-body :global(.astro-code .line::before) {
+      width: 32px;
+      padding-right: 12px;
+    }
+
+    .tags-bottom {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .tags-bottom a {
+      padding: 10px;
+    }
+
+    .pager {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+      margin-top: 32px;
+      padding-top: 24px;
+    }
+
+    .pager a {
+      padding: 16px;
+    }
+
+    .pager-next {
+      grid-column: auto;
+    }
+
+    .pager-meta {
+      font-size: 12px;
+    }
+
+    .pager-title {
+      font-size: 15px;
+    }
   }
 </style>

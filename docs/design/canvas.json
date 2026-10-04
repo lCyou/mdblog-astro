@@ -1,0 +1,179 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "About.dc.html": {
+      "h": 1680,
+      "title": "About — 自己紹介",
+      "w": 1440,
+      "x": 3040,
+      "y": 1880
+    },
+    "AboutDark.dc.html": {
+      "h": 1680,
+      "title": "About — ダーク",
+      "w": 1440,
+      "x": 3040,
+      "y": 4580
+    },
+    "Blog.dc.html": {
+      "h": 2040,
+      "title": "Blog — 記事一覧",
+      "w": 1440,
+      "x": 1520,
+      "y": 1880
+    },
+    "BlogDark.dc.html": {
+      "h": 2040,
+      "title": "Blog — ダーク",
+      "w": 1440,
+      "x": 1520,
+      "y": 4580
+    },
+    "Home.dc.html": {
+      "h": 1560,
+      "title": "Home",
+      "w": 1440,
+      "x": 0,
+      "y": 1880
+    },
+    "HomeDark.dc.html": {
+      "h": 1560,
+      "title": "Home — ダーク",
+      "w": 1440,
+      "x": 0,
+      "y": 4580
+    },
+    "MAbout.dc.html": {
+      "h": 1900,
+      "title": "About — SP",
+      "w": 390,
+      "x": 940,
+      "y": 7280
+    },
+    "MAboutDark.dc.html": {
+      "h": 1900,
+      "title": "About — SP ダーク",
+      "w": 390,
+      "x": 2940,
+      "y": 7280
+    },
+    "MBlog.dc.html": {
+      "h": 2600,
+      "title": "Blog — SP",
+      "w": 390,
+      "x": 470,
+      "y": 7280
+    },
+    "MBlogDark.dc.html": {
+      "h": 2600,
+      "title": "Blog — SP ダーク",
+      "w": 390,
+      "x": 2470,
+      "y": 7280
+    },
+    "MHome.dc.html": {
+      "h": 1760,
+      "title": "Home — SP",
+      "w": 390,
+      "x": 0,
+      "y": 7280
+    },
+    "MHomeDark.dc.html": {
+      "h": 1760,
+      "title": "Home — SP ダーク",
+      "w": 390,
+      "x": 2000,
+      "y": 7280
+    },
+    "MPost.dc.html": {
+      "h": 2560,
+      "title": "Post — SP",
+      "w": 390,
+      "x": 1410,
+      "y": 7280
+    },
+    "MPostDark.dc.html": {
+      "h": 2560,
+      "title": "Post — SP ダーク",
+      "w": 390,
+      "x": 3410,
+      "y": 7280
+    },
+    "Post.dc.html": {
+      "h": 2320,
+      "title": "Post — 記事ページ",
+      "w": 1440,
+      "x": 4560,
+      "y": 1880
+    },
+    "PostDark.dc.html": {
+      "h": 2320,
+      "title": "Post — ダーク",
+      "w": 1440,
+      "x": 4560,
+      "y": 4580
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-04T09:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "darkHeading": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "案B ページ展開 — ダーク",
+      "w": 240,
+      "x": 0,
+      "y": 4320
+    },
+    "mobileHeading": {
+      "kind": "title1",
+      "maxW": 3800,
+      "text": "スマホ版 — ライト / ダーク",
+      "w": 240,
+      "x": 0,
+      "y": 7020
+    },
+    "pagesHeading": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "案B ページ展開 — ライト",
+      "w": 240,
+      "x": 0,
+      "y": 1620
+    },
+    "shape-tzdtql": {
+      "kind": "line",
+      "x": 1295,
+      "x2": 1455,
+      "y": 6321,
+      "y2": 6321
+    }
+  },
+  "order": [
+    "Home.dc.html",
+    "Blog.dc.html",
+    "About.dc.html",
+    "Post.dc.html",
+    "HomeDark.dc.html",
+    "BlogDark.dc.html",
+    "AboutDark.dc.html",
+    "PostDark.dc.html",
+    "MHome.dc.html",
+    "MBlog.dc.html",
+    "MAbout.dc.html",
+    "MPost.dc.html",
+    "MHomeDark.dc.html",
+    "MBlogDark.dc.html",
+    "MAboutDark.dc.html",
+    "MPostDark.dc.html"
+  ],
+  "pages": [],
+  "title": "Terminal Blog Redesign"
+}

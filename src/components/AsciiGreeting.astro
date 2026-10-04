@@ -1,0 +1,47 @@
+---
+import { greetingArt } from '@/data/greetings';
+
+// 時間帯ごとのアート。表示は閲覧者のローカル時刻でスクリプトが切り替える（JS なしでは night）
+const arts = Object.entries(greetingArt).map(([key, lines]) => ({
+  key,
+  text: lines.map((line) => line.trimEnd()).join('\n'),
+}));
+---
+
+<div class="greeting" data-current="night" aria-hidden="true">
+  {arts.map((art) => <pre data-greeting={art.key}>{art.text}</pre>)}
+</div>
+
+<script is:inline>
+  (() => {
+    const el = document.currentScript?.previousElementSibling;
+    if (!el) return;
+    const h = new Date().getHours();
+    el.dataset.current = h >= 5 && h < 12 ? 'morning' : h >= 12 && h < 18 ? 'afternoon' : h >= 18 && h < 22 ? 'evening' : 'night';
+  })();
+</script>
+
+<style>
+  pre {
+    display: none;
+    margin: 0;
+    font-family: var(--font-art);
+    font-size: 20px;
+    line-height: 1.08;
+    color: var(--accent);
+    overflow: hidden;
+  }
+
+  .greeting[data-current='morning'] [data-greeting='morning'],
+  .greeting[data-current='afternoon'] [data-greeting='afternoon'],
+  .greeting[data-current='evening'] [data-greeting='evening'],
+  .greeting[data-current='night'] [data-greeting='night'] {
+    display: block;
+  }
+
+  @media (max-width: 767px) {
+    pre {
+      font-size: 12px;
+    }
+  }
+</style>

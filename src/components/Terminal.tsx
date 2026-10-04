@@ -96,7 +96,7 @@ export default function Terminal({}: TerminalProps) {
     
     const knownCommands = ['help', 'whoami', 'log', 'open', 'clear'];
     const knownOptions = ['--career', '--activity'];
-    const knownPages = ['blog', 'about', 'search'];
+    const knownPages = ['home', 'blog', 'about', 'tags', 'search'];
     
     let result = '';
     let isFirstPart = true;
@@ -223,8 +223,10 @@ export default function Terminal({}: TerminalProps) {
 
       case 'open':
         const routes: Record<string, string> = {
+          home: '/',
           blog: '/blog/',
           about: '/about/',
+          tags: '/tags/',
           search: '/search/',
         };
         
@@ -236,7 +238,7 @@ export default function Terminal({}: TerminalProps) {
           }, 500);
         } else {
           writeLine(term, colorize('Usage: open <page>', ANSI.yellow));
-          writeLine(term, colorize('Available pages: blog, about, search', ANSI.gray));
+          writeLine(term, colorize('Available pages: home, blog, about, tags, search', ANSI.gray));
         }
         break;
 
