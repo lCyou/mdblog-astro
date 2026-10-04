@@ -20,7 +20,9 @@ const jsonLd = [
     inLanguage: 'ja',
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: posts.map((post, i) => ({
+      itemListElement: posts
+        .filter((post) => !post.noindex)
+        .map((post, i) => ({
         '@type': 'ListItem',
         position: i + 1,
         url: `${siteConfig.url}${post.url}`,

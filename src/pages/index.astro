@@ -28,7 +28,10 @@ const jsonLd = [
     name: siteConfig.title,
     url: `${siteConfig.url}/`,
     author: { '@type': 'Person', name: siteConfig.author, url: `${siteConfig.url}/about/` },
-    blogPost: posts.slice(0, 10).map((post) => ({
+    blogPost: posts
+      .filter((post) => !post.noindex)
+      .slice(0, 10)
+      .map((post) => ({
       '@type': 'BlogPosting',
       headline: post.title,
       url: `${siteConfig.url}${post.url}`,

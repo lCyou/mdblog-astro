@@ -25,6 +25,7 @@ const { frontmatter, headings = [] } = Astro.props as {
     tags: string[];
     minutesRead?: string;
     lastModified?: string;
+    noindex?: boolean;
   };
   headings?: Heading[];
 };
@@ -87,6 +88,7 @@ const jsonLd = [
   status={{ path: `~/blog/posts/${slug}.md`, branch: `main@${hash}`, info: ['markdown'] }}
   article={{ publishedTime: published, modifiedTime: modified, tags }}
   jsonLd={jsonLd}
+  noindex={frontmatter.noindex === true}
 >
   {ogImage && <meta slot="head" data-pagefind-meta="image[content]" content={ogImage} />}
 
@@ -195,7 +197,8 @@ const jsonLd = [
 </BaseLayout>
 
 <script>
-  import mermaid from 'mermaid';
+  // mermaid は大きいので、図がある記事でだけ読み込む
+  let mermaid: typeof import('mermaid').default;
 
   const LIGHT_VARS = {
     background: '#f7f2e2',
@@ -283,6 +286,7 @@ const jsonLd = [
   async function initMermaidBlocks() {
     const blocks = document.querySelectorAll<HTMLElement>('pre[data-language="mermaid"], pre:has(code.language-mermaid)');
     if (blocks.length === 0) return;
+    mermaid = (await import('mermaid')).default;
     mermaid.initialize(getMermaidConfig());
 
     for (const pre of blocks) {
