@@ -8,6 +8,8 @@ export interface PostFrontmatter {
   tags: string[];
   minutesRead?: string;
   lastModified?: string;
+  /** true なら検索エンジンに載せない（テスト記事など） */
+  noindex?: boolean;
 }
 
 export interface Post {
@@ -20,6 +22,7 @@ export interface Post {
   date: string; // YYYY-MM-DD
   tags: string[];
   minutesRead?: string;
+  noindex: boolean;
 }
 
 const modules = import.meta.glob<MarkdownInstance<PostFrontmatter>>('../pages/posts/*.md', { eager: true });
@@ -46,6 +49,7 @@ export function getPosts(): Post[] {
         date: toDateString(fm.pubDate),
         tags: fm.tags ?? [],
         minutesRead: fm.minutesRead,
+        noindex: fm.noindex === true,
       };
     })
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
@@ -81,6 +85,9 @@ export function getNeighbors(slug: string) {
   if (i === -1) return { prev: undefined, next: undefined };
   return { prev: posts[i + 1], next: posts[i - 1] };
 }
+
+/** 記事がこの本数未満のタグページは noindex にする（src/scripts/seo-meta.mjs と揃える） */
+export const MIN_POSTS_FOR_TAG_INDEX = 2;
 
 /** カテゴリー（tech / poem / essay）として扱うタグ */
 export const CATEGORY_TAGS = ['tech', 'poem', 'essay'];

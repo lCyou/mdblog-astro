@@ -1,11 +1,21 @@
-import rss, { pagesGlobToRssItems } from '@astrojs/rss';
+import rss from '@astrojs/rss';
+import { getPosts } from '@/utils/posts';
+import { siteConfig } from '@/data/seo';
 
 export async function GET(context) {
+  const posts = getPosts().filter((post) => !post.noindex);
   return rss({
-	title: "lCyou's Blog",
-    	description: 'lcyouがなんでも記事に書き起こす場所',
-    	site: 'https://blog.lcyou.me',
-    	items: await pagesGlobToRssItems(import.meta.glob('./**/*.md')),
-    	customData: `<language>ja-jp</language>`,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    site: context.site ?? siteConfig.url,
+    items: posts.map((post) => ({
+      title: post.title,
+      link: post.url,
+      pubDate: new Date(post.date),
+      description: post.description,
+      categories: post.tags,
+      author: siteConfig.author,
+    })),
+    customData: '<language>ja-jp</language>',
   });
 }
