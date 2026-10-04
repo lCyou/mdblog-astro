@@ -1,70 +1,86 @@
 ---
-import PageLayout from '@/layouts/PageLayout.astro';
-import { Icon } from 'astro-icon/components';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostList from '@/components/PostList.astro';
+import { getPosts, getTagCounts, MIN_POSTS_FOR_TAG_INDEX, type Post } from '@/utils/posts';
+import { siteConfig } from '@/data/seo';
 
-export async function getStaticPaths() {
-    const allPosts = Object.values(import.meta.glob('../posts/*.md', { eager: true }));
-    const uniqueTags = [...new Set(
-        allPosts.map((post: any) => post.frontmatter.tags).flat()
-    )];
-
-    return uniqueTags.map((tag) => {
-        const filteredPosts = allPosts
-            .filter((post: any) => post.frontmatter.tags.includes(tag))
-            .sort((a: any, b: any) => new Date(b.frontmatter.pubDate).getTime() - new Date(a.frontmatter.pubDate).getTime());
-        return {
-            params: { tag },
-            props: { posts: filteredPosts },
-        };
-    });
+export function getStaticPaths() {
+  const posts = getPosts();
+  return getTagCounts(posts).map(({ tag }) => ({
+    params: { tag },
+    props: { posts: posts.filter((post) => post.tags.includes(tag)) },
+  }));
 }
 
 const { tag } = Astro.params;
-const { posts } = Astro.props;
+const { posts } = Astro.props as { posts: Post[] };
+// 記事が少ないタグページは中身が薄いので、リンクはたどらせつつ検索結果には出さない
+const noindex = posts.filter((post) => !post.noindex).length < MIN_POSTS_FOR_TAG_INDEX;
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'home', item: `${siteConfig.url}/` },
+    { '@type': 'ListItem', position: 2, name: 'tags', item: `${siteConfig.url}/tags/` },
+    { '@type': 'ListItem', position: 3, name: tag, item: `${siteConfig.url}/tags/${tag}/` },
+  ],
+};
 ---
 
-<PageLayout pageTitle={tag}>
-  <h1>#{tag}のタグが付いた記事</h1>
-  <ul>
-    {
-      posts.map((post: any) => {
-        const category = post.frontmatter.tags.includes("tech") ? "tech" : "life";
-        return (
-          <li class={`post-item post-${category}`}>
-            <a href={post.url}>
-              <Icon name={category === "tech" ? "mdi:code-tags" : "mdi:heart"} class="category-icon" />
-              <span class="post-title">{post.frontmatter.title}</span>
-              <span class="post-date">{post.frontmatter.pubDate.toString().slice(0,10)}</span>
-            </a>
-          </li>
-        );
-      })
-    }
-  </ul>
-</PageLayout>
+<BaseLayout
+  pageTitle={`#${tag} の記事`}
+  description={`「${tag}」タグが付いた記事の一覧（${posts.length}件）。${posts
+    .slice(0, 3)
+    .map((p) => p.title)
+    .join(' / ')}`}
+  manTitle="TAGS(7)"
+  current="tags"
+  footerCenter="(END)"
+  status={{ path: `~/blog/tags/${tag}/`, info: [`--tag ${tag}  ${posts.length} files`] }}
+  jsonLd={jsonLd}
+  noindex={noindex}
+>
+  <main class="container man-sections">
+    <h1 class="page-title">#{tag}<span class="muted">{posts.length} posts</span></h1>
+    <p class="back"><a href="/tags/" class="text-link">← すべてのタグ</a></p>
+    <PostList posts={posts} />
+  </main>
+</BaseLayout>
 
 <style>
-  .post-item a {
+  .page-title {
+    margin: 0;
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 16px;
+    font-size: 30px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
   }
 
-  .category-icon {
-    font-size: 1.2rem;
-    flex-shrink: 0;
-    color: var(--color-text);
-    transition: color 0.2s ease;
+  .page-title .muted {
+    font-size: 15px;
+    font-weight: 400;
   }
 
-  .post-title {
-    flex: 1;
+  .back {
+    margin: -32px 0 0;
+    font-size: 14px;
   }
 
-  .post-date {
-    font-size: 0.9rem;
-    opacity: 0.7;
-    flex-shrink: 0;
+  @media (max-width: 767px) {
+    .page-title {
+      font-size: 22px;
+    }
+
+    .page-title .muted {
+      font-size: 13px;
+    }
+
+    .back {
+      margin-top: -28px;
+    }
   }
 </style>

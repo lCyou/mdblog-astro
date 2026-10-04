@@ -1,42 +1,314 @@
 ---
-import PageLayout from '@/layouts/PageLayout.astro';
-import TimelineItem from '@/components/TimelineItem.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import careerData from '@/data/career.json';
+import { siteConfig } from '@/data/seo';
+import { getTagCounts } from '@/utils/posts';
 
-const pageTitle = "About Me";
-const timeline = careerData.timeline;
+// "2025年4月 - 現在" → "2025-04 — HEAD"
+const formatPeriod = (period: string) =>
+  period
+    .split(/\s*-\s*/)
+    .map((part) =>
+      part
+        .replace(/(\d{4})年(\d{1,2})月/, (_, y: string, m: string) => `${y}-${m.padStart(2, '0')}`)
+        .replace('現在', 'HEAD'),
+    )
+    .join(' — ');
+
+const timeline = careerData.timeline.map((item) => ({ ...item, period: formatPeriod(item.period) }));
+
+const topics = ['OAuth', 'OIDC', 'keycloak', 'neovim', 'astro', 'TypeScript', 'proxmox', 'raspberry-pi'];
+const knownTags = new Set(getTagCounts().map((t) => t.tag));
+
+const links = [
+  { name: 'github', section: 1, href: 'https://github.com/lcyou', label: '@lcyou' },
+  { name: 'x', section: 1, href: 'https://twitter.com/lCyo_u', label: '@lCyo_u' },
+  { name: 'bluesky', section: 1, href: 'https://bsky.app/profile/lcyou.bsky.social', label: 'lcyou.bsky.social' },
+  { name: 'rss', section: 5, href: '/rss.xml', label: '/rss.xml' },
+];
+
+const description =
+  'lcyou の自己紹介。ID 基盤の開発・運用をしているソフトウェアエンジニアです。経歴や、このブログでよく書いているテーマなど。';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: `${siteConfig.url}/about/`,
+  inLanguage: 'ja',
+  mainEntity: {
+    '@type': 'Person',
+    name: siteConfig.author,
+    jobTitle: 'ソフトウェアエンジニア',
+    image: 'https://github.com/lcyou.png',
+    url: `${siteConfig.url}/about/`,
+    sameAs: siteConfig.sameAs,
+  },
+};
 ---
 
-<PageLayout pageTitle={pageTitle}>
-  <div class="about-container">
-    <header class="about-header">
-      <h1>About Me</h1>
-    </header>
-    
-    <div class="timeline">
-      {timeline.map((item, index) => (
-        <TimelineItem
-          type={item.type}
-          title={item.title}
-          period={item.period}
-          description={item.description}
-          url={item.url}
-          isLast={index === timeline.length - 1}
-        />
-      ))}
-    </div>
-  </div>
-</PageLayout>
+<BaseLayout
+  pageTitle="About"
+  description={description}
+  manTitle="LCYOU(1)"
+  manCenter="User Commands"
+  current="about"
+  footerCenter={new Date().toISOString().slice(0, 10)}
+  status={{ path: '~/blog/about.md', info: ['[RO]'] }}
+  jsonLd={jsonLd}
+>
+  <main class="container man-sections">
+    <section class="man-section" aria-labelledby="name-label">
+      <h2 class="man-label" id="name-label">NAME</h2>
+      <div class="name">
+        <img src="https://github.com/lcyou.png?size=240" alt="lcyou のアバター" width="120" height="120" loading="eager" />
+        <div class="name-text">
+          <h1>lcyou</h1>
+          <p>— ソフトウェアエンジニア。ID 基盤の開発・運用をしています。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="man-section" aria-labelledby="desc-label">
+      <h2 class="man-label" id="desc-label">DESCRIPTION</h2>
+      <div class="prose">
+        <p>
+          ID 基盤まわりの開発・運用をしています。ユーザー認証やセキュリティ関連の機能を作るのが主な仕事です。
+        </p>
+        <p>
+          このブログでは、OAuth / OIDC などの認証・認可の話、Neovim の設定、Astro や自宅環境いじりのこと、参加したイベントの感想などを書いています。
+        </p>
+      </div>
+    </section>
+
+    <section class="man-section" aria-labelledby="history-label">
+      <h2 class="man-label" id="history-label">HISTORY</h2>
+      <ol class="history">
+        {
+          timeline.map((item) => (
+            <li>
+              <div class="period">{item.period}</div>
+              <div class="item">
+                <h3>{item.title}</h3>
+                {item.description && <p>{item.description}</p>}
+                {item.url && (
+                  <a href={item.url} class="text-link">
+                    {item.url.replace(/^https?:\/\/(www\.)?github\.com\//, '')}
+                  </a>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="man-section" aria-labelledby="topics-label">
+      <h2 class="man-label" id="topics-label">TOPICS</h2>
+      <ul class="chip-list">
+        {
+          topics
+            .filter((tag) => knownTags.has(tag))
+            .map((tag) => (
+              <li>
+                <a href={`/tags/${tag}/`} class="chip">
+                  {tag}
+                </a>
+              </li>
+            ))
+        }
+      </ul>
+    </section>
+
+    <section class="man-section" aria-labelledby="see-also-label">
+      <h2 class="man-label" id="see-also-label">SEE ALSO</h2>
+      <ul class="see-also">
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href} rel={link.href.startsWith('http') ? 'me' : undefined}>
+                <span>
+                  {link.name}({link.section})
+                </span>
+                <span class="muted">{link.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+</BaseLayout>
 
 <style>
-  .about-container {
-    max-width: 900px;
-    margin: 0 auto;
+  .name {
+    display: flex;
+    align-items: center;
+    gap: 32px;
   }
-  
-  .timeline {
-    margin-top: 2rem;
-    padding: 1rem 0;
+
+  .name img {
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+    border: 1px solid var(--rule);
+    background: var(--card);
   }
-  
+
+  .name-text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .name h1 {
+    margin: 0;
+    font-size: 46px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .name p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--body);
+  }
+
+  .prose {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 720px;
+    font-size: 16px;
+    line-height: 2;
+    color: var(--body);
+  }
+
+  .prose p {
+    margin: 0;
+  }
+
+  .history {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .history li {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 24px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .period {
+    padding-top: 3px;
+    font-size: 14px;
+    color: var(--accent);
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .item h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .item p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--body);
+  }
+
+  .item .text-link {
+    align-self: flex-start;
+    font-size: 14px;
+  }
+
+  .see-also {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 32px;
+    max-width: 720px;
+    font-size: 15px;
+  }
+
+  .see-also a {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px dotted var(--leader);
+    text-decoration: none;
+  }
+
+  @media (max-width: 767px) {
+    .name {
+      flex-wrap: wrap;
+      gap: 14px 16px;
+    }
+
+    .name img {
+      width: 72px;
+      height: 72px;
+    }
+
+    .name-text {
+      display: contents;
+    }
+
+    .name h1 {
+      font-size: 32px;
+    }
+
+    .name p {
+      flex-basis: 100%;
+      font-size: 15px;
+    }
+
+    .prose {
+      font-size: 14px;
+    }
+
+    .history li {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 6px;
+      padding: 16px 0;
+    }
+
+    .period {
+      padding-top: 0;
+      font-size: 12px;
+    }
+
+    .item h3 {
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .item p {
+      font-size: 13px;
+    }
+
+    .see-also {
+      grid-template-columns: minmax(0, 1fr);
+      font-size: 14px;
+    }
+
+    .see-also a {
+      padding: 13px 0;
+    }
+  }
 </style>

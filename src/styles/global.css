@@ -1,110 +1,254 @@
-/* カラーテーマ変数 */
+/* ------------------------------------------------------------
+ * Design tokens（docs/design の案B「man ページ」）
+ * ライト: :root / ダーク: html.dark
+ * ------------------------------------------------------------ */
 :root {
-  /* ライトモード - Solarized Light */
-  --color-bg: #f9f5d7; /* base3 - クリームイエロー */
-  --color-text: #605d52; /* base00 - グレーブルー */
-  --color-text-emphasis: #33312d; /* base02 - ダークグレーブルー */
-  --color-accent: #f3927e; /* red - Solarized赤 */
-  --color-accent-hover: #f3927e; /* orange - Solarizedオレンジ */
-  --color-border: #aeac99; /* base2 */
-  --color-card-bg: #e8e4c6; /* base2 - ライトベージュ */
+  --bg: #f7f2e2;
+  --card: #fbf8ee;
+  --text: #2f2d28;
+  --body: #46443c;
+  --muted: #6b685d;
+  --rule: #ddd5bb;
+  --leader: #c9c0a2;
+  --inv: #2f2d28;
+  --inv-text: #f7f2e2;
+  --accent: #a8452f;
+  --bar: #2f2d28;
+  --bar-text: #e8e2cc;
+  --code-bg: #2f2d28;
+  --code-fg: #eee8d5;
+  --code-muted: #9c967f;
+
+  --font-mono: 'IBM Plex Mono', 'M PLUS 1 Code', ui-monospace, monospace;
+  --font-art: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  --content: 1040px;
+  --gutter: 16px;
+  --statusline-h: 36px;
+
+  color-scheme: light;
 }
 
-.dark {
-  /* ダークモード */
-  --color-bg: #33312d; /* 黒 */
-  --color-text: #fdf6e3; /* ベージュ */
-  --color-text-emphasis: #eee8d5;
-  --color-accent: #f3927e; /* 赤オレンジ */
-  --color-accent-hover: #f3927e;
-  --color-border: #2a2a2a;
-  --color-card-bg: #605d52;
+html.dark {
+  --bg: #1c1b18;
+  --card: #24231f;
+  --text: #e8e2cc;
+  --body: #cfc8b0;
+  --muted: #9c967f;
+  --rule: #3a3830;
+  --leader: #4a473d;
+  --inv: #e8e2cc;
+  --inv-text: #1c1b18;
+  --accent: #e8916f;
+  --bar: #2a2925;
+  --bar-text: #cfc8b0;
+  --code-bg: #121110;
+  --code-fg: #e8e2cc;
+  --code-muted: #8a8574;
+
+  color-scheme: dark;
 }
 
-  .dark .astro-code,
-  .dark .astro-code span {
-    color: var(--shiki-dark) !important;
-    background-color: var(--shiki-dark-bg) !important;
-    /* Optional, if you also want font styles */
-    font-style: var(--shiki-dark-font-style) !important;
-    font-weight: var(--shiki-dark-font-weight) !important;
-    text-decoration: var(--shiki-dark-text-decoration) !important;
-  }
-
-
-* {
+/* ------------------------------------------------------------ base */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 24px;
 }
 
 body {
-  margin: 0 auto;
-  width: 90%;
-  max-width: 80ch;
-  padding: 1rem;
-  line-height: 1.6;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color: var(--color-text-emphasis);
-  margin: 0.5rem 0rem;
-  font-weight: 600;
-}
-
-h1 {
-  font-size: 2.5rem;
-  margin: 0.5rem 0;
-}
-
-h2 {
-  font-size: 1.5rem;
-}
-
-h3 {
-  font-size: 1.3rem;
+h1,
+h2,
+h3,
+h4 {
+  color: var(--text);
+  line-height: 1.5;
 }
 
 a {
-  color: var(--color-text);
-  text-decoration: none;
-  transition: color 0.2s ease;
+  color: inherit;
 }
 
-a:hover,
-a:focus {
-  color: var(--color-accent-hover);
+a:hover {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 img {
   max-width: 100%;
   height: auto;
-  border-radius: 0.5rem;
 }
 
-
-/* 段落 */
-p {
-  margin: 1rem 0;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.icon {
-  font-size: 1.5em;
-  transition: all 0.2s ease;
-  vertical-align: middle;
+.container {
+  width: 100%;
+  max-width: calc(var(--content) + var(--gutter) * 2);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
 }
 
-/* shiki */
+/* ------------------------------------------------------------ man ページ風セクション */
+.man-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+  padding-top: 52px;
+  padding-bottom: 64px;
+}
+
+.man-section {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+}
+
+.man-label {
+  margin: 0;
+  padding-top: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.accent {
+  color: var(--accent);
+}
+
+.text-link {
+  color: var(--accent);
+  display: inline-block;
+  padding: 6px 0;
+}
+
+.chip {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  color: inherit;
+  text-decoration: none;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+}
+
+.chip[aria-current='page'] {
+  background: var(--inv);
+  border-color: var(--inv);
+  color: var(--inv-text);
+}
+
+.chip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 15px;
+}
+
+@media (max-width: 767px) {
+  .man-sections {
+    gap: 36px;
+    padding-top: 32px;
+    padding-bottom: 48px;
+  }
+
+  .man-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .man-label {
+    padding-top: 0;
+    font-size: 13px;
+  }
+
+  .chip-list {
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .chip {
+    padding: 10px;
+  }
+}
+
+/* ------------------------------------------------------------ shiki */
 .astro-code {
+  font-family: var(--font-mono);
   font-size: 14px;
-  line-height: 1.5;
-  padding: 1rem;
-  min-height: 4em;
-  white-space: pre;
-  border-radius: 1rem;
+  line-height: 1.75;
+  padding: 16px 0;
+  overflow-x: auto;
+  counter-reset: line;
+}
+
+.astro-code code {
+  display: block;
+  min-width: max-content;
+}
+
+.astro-code .line {
+  padding-right: 20px;
+}
+
+.astro-code .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 40px;
+  padding-right: 16px;
+  text-align: right;
+  color: var(--code-muted);
+  user-select: none;
+}
+
+html.dark .astro-code,
+html.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+html.dark .astro-code .line::before {
+  color: var(--code-muted) !important;
 }

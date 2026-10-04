@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=M+PLUS+1+Code:wght@400;500;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1560px; box-sizing: border-box; background: {{t.bg}}; color: {{t.text}}; font-family: 'IBM Plex Mono', 'M PLUS 1 Code', monospace; display: flex; flex-direction: column; align-items: center; overflow: hidden">
+
+  <div style="width: 100%; border-bottom: 1px solid {{t.rule}}; display: flex; justify-content: center">
+    <header style="width: 1040px; display: flex; flex-direction: column">
+      <div style="display: flex; justify-content: space-between; padding: 22px 0 14px; font-size: 14px; color: {{t.muted}}">
+        <span>LCYOU(7)</span>
+        <span>lCyou's Blog Manual</span>
+        <span>LCYOU(7)</span>
+      </div>
+      <nav aria-label="メイン" style="display: flex; align-items: center; gap: 2px; padding-bottom: 14px; font-size: 15px">
+        <a href="/" aria-current="page" style="padding: 10px 14px; background: {{t.inv}}; color: {{t.invText}}; text-decoration: none"><span style="opacity: 0.6">1:</span>home</a>
+        <a href="/blog/" style="padding: 10px 14px; color: inherit; text-decoration: none"><span style="color: {{t.muted}}">2:</span>blog</a>
+        <a href="/about/" style="padding: 10px 14px; color: inherit; text-decoration: none"><span style="color: {{t.muted}}">3:</span>about</a>
+        <a href="/tags/" style="padding: 10px 14px; color: inherit; text-decoration: none"><span style="color: {{t.muted}}">4:</span>tags</a>
+        <a href="/search/" style="padding: 10px 14px; color: inherit; text-decoration: none"><span style="color: {{t.muted}}">5:</span>search</a>
+        <div style="flex-grow: 1"></div>
+        <a href="/rss.xml" style="padding: 10px 14px; color: {{t.muted}}; text-decoration: none">rss</a>
+        <button type="button" aria-label="テーマを切り替え" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid {{t.rule}}; color: {{t.text}}; cursor: pointer">
+          <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+          <sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+        </button>
+      </nav>
+    </header>
+  </div>
+
+  <main style="width: 1040px; display: flex; flex-direction: column; gap: 44px; padding-top: 52px">
+
+    <section style="display: flex; flex-direction: column; gap: 20px; padding-bottom: 8px">
+      <pre aria-hidden="true" style="margin: 0; font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace; font-size: 20px; line-height: 1.08; color: {{t.accent}}">{{art}}</pre>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <h1 style="margin: 0; font-size: 22px; font-weight: 600">lCyou's Blog</h1>
+        <p style="margin: 0; font-size: 16px; line-height: 1.8; color: {{t.body}}">— 技術的なことや本の感想など、いろいろ書いています。</p>
+      </div>
+    </section>
+
+    <section style="display: grid; grid-template-columns: 200px minmax(0, 1fr)">
+      <h2 style="margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}; padding-top: 6px">LATEST</h2>
+      <article style="display: flex; flex-direction: column; gap: 14px; padding: 28px 32px; background: {{t.card}}; border: 1px solid {{t.rule}}">
+        <div style="display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: {{t.muted}}"><span>commit <span style="color: {{t.accent}}">3b5082bd</span></span><time datetime="2026-07-25">2026-07-25</time><span>essay, ai</span><span>[読了時間]</span></div>
+        <h3 style="margin: 0; font-size: 28px; font-weight: 700; line-height: 1.5"><a href="/posts/260725-3b5082bd/" style="color: inherit; text-decoration: none">OSSを開発していないのにAI Slopを感じた</a></h3>
+        <p style="margin: 0; font-size: 15px; line-height: 1.95; color: {{t.body}}">一時期 OSS 界隈で話題になった「AI Slop」。OSS で活動しているわけではないけれど、新人教育や業務委託の方など、いろんな人と働く中で似たものを感じ始めている、という話。</p>
+        <a href="/posts/260725-3b5082bd/" style="align-self: flex-start; font-size: 15px; color: {{t.accent}}; padding: 6px 0">:read 続きを読む →</a>
+      </article>
+    </section>
+
+    <section style="display: grid; grid-template-columns: 200px minmax(0, 1fr)">
+      <h2 style="margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}; padding-top: 14px">POSTS</h2>
+      <div style="display: flex; flex-direction: column">
+        <ul style="list-style: none; margin: 0; padding: 0; font-size: 16px">
+          <li style="display: flex; align-items: baseline; gap: 12px; padding: 12px 0"><a href="/posts/260614-cd9f2539/" style="color: inherit; text-decoration: none">認可コードの横取り攻撃対策でのPKCE</a><span aria-hidden="true" style="flex-grow: 1; border-bottom: 2px dotted {{t.leader}}"></span><span style="font-size: 13px; color: {{t.muted}}">cd9f2539</span><time datetime="2026-06-14" style="font-size: 14px; color: {{t.muted}}">2026-06-14</time></li>
+          <li style="display: flex; align-items: baseline; gap: 12px; padding: 12px 0"><a href="/posts/260526-b059efc1/" style="color: inherit; text-decoration: none">TsKaigi2026に参加してきた</a><span aria-hidden="true" style="flex-grow: 1; border-bottom: 2px dotted {{t.leader}}"></span><span style="font-size: 13px; color: {{t.muted}}">b059efc1</span><time datetime="2026-05-26" style="font-size: 14px; color: {{t.muted}}">2026-05-26</time></li>
+          <li style="display: flex; align-items: baseline; gap: 12px; padding: 12px 0"><a href="/posts/260521-51dc6338/" style="color: inherit; text-decoration: none">Astroのコミュニティイベントに参加した</a><span aria-hidden="true" style="flex-grow: 1; border-bottom: 2px dotted {{t.leader}}"></span><span style="font-size: 13px; color: {{t.muted}}">51dc6338</span><time datetime="2026-05-21" style="font-size: 14px; color: {{t.muted}}">2026-05-21</time></li>
+          <li style="display: flex; align-items: baseline; gap: 12px; padding: 12px 0"><a href="/posts/260405-5d7240b0/" style="color: inherit; text-decoration: none">keycloak, Terraformを触ってみる</a><span aria-hidden="true" style="flex-grow: 1; border-bottom: 2px dotted {{t.leader}}"></span><span style="font-size: 13px; color: {{t.muted}}">5d7240b0</span><time datetime="2026-04-05" style="font-size: 14px; color: {{t.muted}}">2026-04-05</time></li>
+          <li style="display: flex; align-items: baseline; gap: 12px; padding: 12px 0"><a href="/posts/260320-58c6221b/" style="color: inherit; text-decoration: none">Nvimカスタマイズ日記#2</a><span aria-hidden="true" style="flex-grow: 1; border-bottom: 2px dotted {{t.leader}}"></span><span style="font-size: 13px; color: {{t.muted}}">58c6221b</span><time datetime="2026-03-20" style="font-size: 14px; color: {{t.muted}}">2026-03-20</time></li>
+          <li style="display: flex; align-items: baseline; gap: 12px; padding: 12px 0"><a href="/posts/260310-ebcb05b9/" style="color: inherit; text-decoration: none">Raspberry Pi Connectでリモートからローカル環境をいい感じにさわれそう</a><span aria-hidden="true" style="flex-grow: 1; border-bottom: 2px dotted {{t.leader}}"></span><span style="font-size: 13px; color: {{t.muted}}">ebcb05b9</span><time datetime="2026-03-10" style="font-size: 14px; color: {{t.muted}}">2026-03-10</time></li>
+          <li style="display: flex; align-items: baseline; gap: 12px; padding: 12px 0"><a href="/posts/260222-f0ac30af/" style="color: inherit; text-decoration: none">ブログをアップデートしました</a><span aria-hidden="true" style="flex-grow: 1; border-bottom: 2px dotted {{t.leader}}"></span><span style="font-size: 13px; color: {{t.muted}}">f0ac30af</span><time datetime="2026-02-22" style="font-size: 14px; color: {{t.muted}}">2026-02-22</time></li>
+        </ul>
+        <a href="/blog/" style="align-self: flex-start; margin-top: 12px; font-size: 15px; color: {{t.accent}}; padding: 6px 0">git log --all  （全11件）→</a>
+      </div>
+    </section>
+
+    <section style="display: grid; grid-template-columns: 200px minmax(0, 1fr)">
+      <h2 style="margin: 0; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}">SEE ALSO</h2>
+      <div style="font-size: 16px; line-height: 1.8"><a href="/about/" style="color: inherit">about</a>(1), <a href="/tags/" style="color: inherit">tags</a>(7), <a href="/rss.xml" style="color: inherit">rss</a>(5), <a href="https://github.com/lcyou" style="color: inherit">github</a>(1)</div>
+    </section>
+  </main>
+
+  <div style="flex-grow: 1"></div>
+  <footer style="width: 1040px; display: flex; justify-content: space-between; padding: 20px 0 24px; border-top: 1px solid {{t.rule}}; font-size: 14px; color: {{t.muted}}">
+    <span>lcyou</span>
+    <span>2026-10-04</span>
+    <span>LCYOU(7)</span>
+  </footer>
+
+  <div role="status" aria-label="ステータスライン" style="width: 100%; height: 36px; flex-shrink: 0; display: flex; align-items: stretch; background: {{t.bar}}; color: {{t.barText}}; font-size: 13px">
+    <span style="display: flex; align-items: center; padding: 0 14px; background: {{t.accent}}; color: {{t.bg}}; font-weight: 700">NORMAL</span>
+    <span style="display: flex; align-items: center; padding: 0 14px; gap: 8px"><span style="opacity: 0.7">main</span><span>~/blog/index.md</span></span>
+    <div style="flex-grow: 1"></div>
+    <span style="display: flex; align-items: center; padding: 0 14px; opacity: 0.75">11 posts</span>
+    <span style="display: flex; align-items: center; padding: 0 14px; opacity: 0.75">utf-8 | ja</span>
+    <span style="display: flex; align-items: center; padding: 0 14px; background: {{t.inv}}; color: {{t.invText}}">Top</span>
+    <span style="display: flex; align-items: center; padding: 0 14px; background: {{t.accent}}; color: {{t.bg}}; font-weight: 700">{{clock}}</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"greeting":{"editor":"enum","options":["dawn","noon","dusk","void"],"default":"void"},"$preview":{"width":1440,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = (this.props.theme ?? 'light') === 'dark';
+    const t = dark
+      ? { bg: '#1c1b18', card: '#24231f', text: '#e8e2cc', body: '#cfc8b0', muted: '#9c967f', rule: '#3a3830', leader: '#4a473d', inv: '#e8e2cc', invText: '#1c1b18', accent: '#e8916f', codeBg: '#121110', codeFg: '#e8e2cc', bar: '#2a2925', barText: '#cfc8b0', green: '#a3b07a' }
+      : { bg: '#f7f2e2', card: '#fbf8ee', text: '#2f2d28', body: '#46443c', muted: '#6b685d', rule: '#ddd5bb', leader: '#c9c0a2', inv: '#2f2d28', invText: '#f7f2e2', accent: '#a8452f', codeBg: '#2f2d28', codeFg: '#eee8d5', bar: '#2f2d28', barText: '#e8e2cc', green: '#5f7a3a' };
+    const arts = {
+      dawn: [' ██████╗  █████╗ ██╗    ██╗███╗   ██╗', ' ██╔══██╗██╔══██╗██║    ██║████╗  ██║', ' ██║  ██║███████║██║ █╗ ██║██╔██╗ ██║', ' ██║  ██║██╔══██║██║███╗██║██║╚██╗██║', ' ██████╔╝██║  ██║╚███╔███╔╝██║ ╚████║██╗', ' ╚═════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═══╝╚═╝'],
+      noon: [' ███╗   ██╗ ██████╗  ██████╗ ███╗   ██╗', ' ████╗  ██║██╔═══██╗██╔═══██╗████╗  ██║', ' ██╔██╗ ██║██║   ██║██║   ██║██╔██╗ ██║', ' ██║╚██╗██║██║   ██║██║   ██║██║╚██╗██║', ' ██║ ╚████║╚██████╔╝╚██████╔╝██║ ╚████║██╗', ' ╚═╝  ╚═══╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═╝'],
+      dusk: [' ██████╗ ██╗   ██╗███████╗██╗  ██╗', ' ██╔══██╗██║   ██║██╔════╝██║ ██╔╝', ' ██║  ██║██║   ██║███████╗█████╔╝', ' ██║  ██║██║   ██║╚════██║██╔═██╗', ' ██████╔╝╚██████╔╝███████║██║  ██╗██╗', ' ╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝'],
+      void: [' ██╗   ██╗ ██████╗ ██╗██████╗', ' ██║   ██║██╔═══██╗██║██╔══██╗', ' ██║   ██║██║   ██║██║██║  ██║', ' ╚██╗ ██╔╝██║   ██║██║██║  ██║', '  ╚████╔╝ ╚██████╔╝██║██████╔╝██╗', '   ╚═══╝   ╚═════╝ ╚═╝╚═════╝ ╚═╝'],
+    };
+    const clocks = { dawn: '07:12', noon: '12:30', dusk: '19:05', void: '23:42' };
+    const g = arts[this.props.greeting] ? this.props.greeting : 'void';
+    return { t, isDark: dark, isLight: !dark, art: arts[g].join('\n'), clock: clocks[g] };
+  }
+}
+</script>
+</body>
+</html>

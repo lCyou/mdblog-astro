@@ -1,43 +1,322 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Terminal from '@/components/Terminal';
-const pageTitle = "Home";
+import AsciiGreeting from '@/components/AsciiGreeting.astro';
+import { getPosts } from '@/utils/posts';
+import { siteConfig } from '@/data/seo';
+
+const posts = getPosts();
+const [latest, ...rest] = posts;
+const recent = rest.slice(0, 7);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: siteConfig.title,
+    url: `${siteConfig.url}/`,
+    description: siteConfig.description,
+    inLanguage: 'ja',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${siteConfig.url}/search/?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: siteConfig.title,
+    url: `${siteConfig.url}/`,
+    author: { '@type': 'Person', name: siteConfig.author, url: `${siteConfig.url}/about/` },
+    blogPost: posts
+      .filter((post) => !post.noindex)
+      .slice(0, 10)
+      .map((post) => ({
+      '@type': 'BlogPosting',
+      headline: post.title,
+      url: `${siteConfig.url}${post.url}`,
+      datePublished: post.date,
+    })),
+  },
+];
 ---
 
-<BaseLayout pageTitle={pageTitle}>
-	<div class="terminal-container">
-		<Terminal client:load />
-	</div>
+<BaseLayout
+  manTitle="LCYOU(7)"
+  current="home"
+  footerCenter={new Date().toISOString().slice(0, 10)}
+  status={{ path: '~/blog/index.md', info: [`${posts.length} posts`] }}
+  jsonLd={jsonLd}
+>
+  <main class="container man-sections">
+    <section class="hero">
+      <AsciiGreeting />
+      <div class="hero-text">
+        <h1>{siteConfig.title}</h1>
+        <p>— {siteConfig.description}</p>
+      </div>
+    </section>
+
+    {
+      latest && (
+        <section class="man-section" aria-labelledby="latest-label">
+          <h2 class="man-label" id="latest-label">LATEST</h2>
+          <article class="latest">
+            <div class="latest-meta">
+              <span class="commit">
+                commit <span class="accent">{latest.hash}</span>
+              </span>
+              <time datetime={latest.date}>{latest.date}</time>
+              <span class="tags">{latest.tags.join(', ')}</span>
+              {latest.minutesRead && <span class="read">{latest.minutesRead}</span>}
+            </div>
+            <h3>
+              <a href={latest.url}>{latest.title}</a>
+            </h3>
+            {latest.description && <p>{latest.description}</p>}
+            <a href={latest.url} class="text-link" aria-label={`「${latest.title}」を読む`}>
+              <span class="cmd">:read </span>続きを読む →
+            </a>
+          </article>
+        </section>
+      )
+    }
+
+    <section class="man-section" aria-labelledby="posts-label">
+      <h2 class="man-label" id="posts-label">POSTS</h2>
+      <div>
+        <ul class="posts">
+          {
+            recent.map((post) => (
+              <li>
+                <a href={post.url}>{post.title}</a>
+                <span class="leader" aria-hidden="true" />
+                <span class="meta">
+                  <span class="hash">{post.hash}</span>
+                  <time datetime={post.date}>{post.date}</time>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+        <a href="/blog/" class="text-link more">
+          <span class="cmd">git log --all </span>すべての記事（{posts.length}件）→
+        </a>
+      </div>
+    </section>
+
+    <section class="man-section" aria-labelledby="see-also-label">
+      <h2 class="man-label" id="see-also-label">SEE ALSO</h2>
+      <p class="see-also">
+        <a href="/about/">about</a>(1), <a href="/tags/">tags</a>(7), <a href="/rss.xml">rss</a>(5),
+        <a href="https://github.com/lcyou" rel="me">github</a>(1), <a href="/terminal/">terminal</a>(1)
+      </p>
+    </section>
+  </main>
 </BaseLayout>
 
 <style>
-	.terminal-container {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: 90vw;
-		max-width: 1200px;
-		height: 80vh;
-		max-height: 800px;
-		z-index: 1;
-		padding: 1rem;
-		box-sizing: border-box;
-		background-color: rgba(13, 12, 12, 1);
-		border-radius: 0.5rem;
-		backdrop-filter: blur(10px);
-	}
-	
-	:global(footer) {
-		display: none;
-	}
-	
-	@media (max-width: 768px) {
-		.terminal-container {
-			width: 95vw;
-			height: 85vh;
-			padding: 0.5rem;
-			margin-bottom: 5rem;
-		}
-	}
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 8px;
+  }
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .hero h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .hero p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--body);
+  }
+
+  .latest {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 28px 32px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+  }
+
+  .latest-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .latest h3 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .latest h3 a {
+    text-decoration: none;
+  }
+
+  .latest p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.95;
+    color: var(--body);
+  }
+
+  .latest .text-link {
+    align-self: flex-start;
+    font-size: 15px;
+  }
+
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+  }
+
+  .posts li {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .posts a {
+    text-decoration: none;
+  }
+
+  .leader {
+    flex-grow: 1;
+    min-width: 24px;
+    border-bottom: 2px dotted var(--leader);
+  }
+
+  .meta {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    flex-shrink: 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .hash {
+    font-size: 13px;
+  }
+
+  .more {
+    margin-top: 12px;
+    font-size: 15px;
+  }
+
+  .see-also {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      gap: 14px;
+      padding-bottom: 0;
+    }
+
+    .hero h1 {
+      font-size: 18px;
+    }
+
+    .hero p {
+      font-size: 14px;
+    }
+
+    .latest {
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .latest-meta {
+      font-size: 12px;
+      gap: 4px 14px;
+    }
+
+    .latest-meta .commit {
+      order: 2;
+    }
+
+    .latest-meta .tags,
+    .latest-meta .read,
+    .cmd {
+      display: none;
+    }
+
+    .latest h3 {
+      font-size: 20px;
+      line-height: 1.55;
+    }
+
+    .latest p {
+      font-size: 14px;
+      line-height: 1.9;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .latest .text-link,
+    .more {
+      font-size: 14px;
+      padding: 10px 0;
+    }
+
+    .posts {
+      border-top: 1px solid var(--rule);
+    }
+
+    .posts li {
+      flex-direction: column;
+      gap: 4px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .posts a {
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .leader {
+      display: none;
+    }
+
+    .meta {
+      font-size: 12px;
+      flex-direction: row-reverse;
+    }
+
+    .hash {
+      font-size: 12px;
+    }
+
+    .see-also {
+      font-size: 14px;
+      line-height: 2;
+    }
+  }
 </style>

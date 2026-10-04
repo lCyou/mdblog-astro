@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Blog スマホ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=M+PLUS+1+Code:wght@400;500;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 2600px; box-sizing: border-box; background: {{t.bg}}; color: {{t.text}}; font-family: 'IBM Plex Mono', 'M PLUS 1 Code', monospace; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="padding: 0 16px; border-bottom: 1px solid {{t.rule}}; display: flex; flex-direction: column">
+    <div style="display: flex; align-items: center; height: 52px; font-size: 13px; color: {{t.muted}}">
+      <span style="flex-grow: 1">BLOG(5)</span>
+      <a href="/search/" aria-label="検索" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: {{t.text}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></a>
+      <button type="button" aria-label="テーマを切り替え" style="width: 44px; height: 44px; margin-right: -10px; display: flex; align-items: center; justify-content: center; background: transparent; border: 0; color: {{t.text}}; cursor: pointer">
+        <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+        <sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+      </button>
+    </div>
+    <nav aria-label="メイン" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding-bottom: 12px; font-size: 14px">
+      <a href="/" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">home</a>
+      <a href="/blog/" aria-current="page" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.inv}}; background: {{t.inv}}; color: {{t.invText}}; text-decoration: none">blog</a>
+      <a href="/about/" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">about</a>
+      <a href="/tags/" style="height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">tags</a>
+    </nav>
+  </header>
+
+  <main style="padding: 28px 16px 0; display: flex; flex-direction: column; gap: 28px">
+
+    <h1 style="margin: 0; display: flex; align-items: baseline; gap: 12px; font-size: 22px; font-weight: 600">記事一覧<span style="font-size: 13px; font-weight: 400; color: {{t.muted}}">11 posts · 新しい順</span></h1>
+
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: {{t.muted}}">OPTIONS</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px">
+        <a href="/blog/" aria-current="page" style="padding: 12px 10px; background: {{t.inv}}; color: {{t.invText}}; text-decoration: none">--all 11</a>
+        <a href="/tags/tech/" style="padding: 12px 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">tech <span style="color: {{t.muted}}">8</span></a>
+        <a href="/tags/poem/" style="padding: 12px 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">poem <span style="color: {{t.muted}}">2</span></a>
+        <a href="/tags/essay/" style="padding: 12px 10px; border: 1px solid {{t.rule}}; color: inherit; text-decoration: none">essay <span style="color: {{t.muted}}">1</span></a>
+        <a href="/tags/" style="padding: 12px 6px; color: {{t.accent}}">tags →</a>
+      </div>
+      <form style="display: flex; align-items: center; border: 1px solid {{t.text}}; background: {{t.card}}">
+        <label for="bq" style="padding: 0 4px 0 12px; font-size: 15px; color: {{t.green}}">/</label>
+        <input id="bq" type="search" placeholder="記事を検索" style="flex-grow: 1; min-width: 0; height: 46px; border: 0; background: transparent; font-family: 'IBM Plex Mono', 'M PLUS 1 Code', monospace; font-size: 16px; color: {{t.text}}; outline: none">
+        <button type="submit" style="height: 48px; padding: 0 14px; margin: -1px -1px -1px 0; background: {{t.inv}}; color: {{t.invText}}; border: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px">&lt;CR&gt;</button>
+      </form>
+    </section>
+
+    <div style="display: flex; flex-direction: column; border-top: 1px solid {{t.text}}">
+      <sc-for list="{{months}}" as="m" hint-placeholder-count="6">
+        <section style="display: flex; flex-direction: column; padding-top: 16px">
+          <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.muted}}">── {{m.label}}</h2>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+            <sc-for list="{{m.posts}}" as="p" hint-placeholder-count="2">
+              <li style="border-bottom: 1px solid {{t.rule}}">
+                <article style="display: flex; flex-direction: column; gap: 6px; padding: 14px 0 16px">
+                  <div style="display: flex; gap: 12px; font-size: 12px; color: {{t.muted}}"><time datetime="{{p.date}}">{{p.date}}</time><span style="color: {{t.accent}}">{{p.hash}}</span></div>
+                  <h3 style="margin: 0; font-size: 16px; font-weight: 700; line-height: 1.6"><a href="{{p.url}}" style="color: inherit; text-decoration: none">{{p.title}}</a></h3>
+                  <p style="margin: 0; font-size: 13px; line-height: 1.85; color: {{t.body}}">{{p.desc}}</p>
+                  <div style="font-size: 12px; color: {{t.muted}}">{{p.tags}}</div>
+                </article>
+              </li>
+            </sc-for>
+          </ul>
+        </section>
+      </sc-for>
+    </div>
+  </main>
+
+  <div style="flex-grow: 1"></div>
+  <footer style="margin: 0 16px; display: flex; justify-content: space-between; padding: 16px 0 20px; font-size: 12px; color: {{t.muted}}">
+    <span>(END)</span>
+    <span>BLOG(5)</span>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":2600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = (this.props.theme ?? 'light') === 'dark';
+    const t = dark
+      ? { bg: '#1c1b18', card: '#24231f', text: '#e8e2cc', body: '#cfc8b0', muted: '#9c967f', rule: '#3a3830', inv: '#e8e2cc', invText: '#1c1b18', accent: '#e8916f', bar: '#2a2925', barText: '#cfc8b0', green: '#a3b07a' }
+      : { bg: '#f7f2e2', card: '#fbf8ee', text: '#2f2d28', body: '#46443c', muted: '#6b685d', rule: '#ddd5bb', inv: '#2f2d28', invText: '#f7f2e2', accent: '#a8452f', bar: '#2f2d28', barText: '#e8e2cc', green: '#5f7a3a' };
+    const posts = [
+      ['2026-07-25', '260725-3b5082bd', 'OSSを開発していないのにAI Slopを感じた', '新人教育や業務委託の方など、いろんな人と働く中で AI Slop を感じ始めているという話。', 'essay, ai'],
+      ['2026-06-14', '260614-cd9f2539', '認可コードの横取り攻撃対策でのPKCE', '認可コード横取り攻撃から、認可コードフローを拡張する PKCE の説明をしてみます。', 'tech, PKCE, OAuth, OIDC'],
+      ['2026-05-26', '260526-b059efc1', 'TsKaigi2026に参加してきた', '2024 の TsKaigi Kansai 以来、久しぶりに TsKaigi に参加してきました。', 'poem, TypeScript'],
+      ['2026-05-21', '260521-51dc6338', 'Astroのコミュニティイベントに参加した', 'Astro の日本コミュニティのイベントに参加してきました。', 'poem, astro'],
+      ['2026-04-05', '260405-5d7240b0', 'keycloak, Terraformを触ってみる', '仕事では IDaaS を使っているが、セルフホストの keycloak を使ってみたくなった。', 'tech, keycloak, terraform, proxmox'],
+      ['2026-03-20', '260320-58c6221b', 'Nvimカスタマイズ日記#2', 'Nvim プラグインを一から入れて、コマンドを覚えていこうとしている記録の続き。', 'tech, neovim, lua'],
+      ['2026-03-10', '260310-ebcb05b9', 'Raspberry Pi Connectでリモートからローカル環境をいい感じにさわれそう', 'Raspberry Pi OS のプラグインで、リモートデスクトップのようにいじれそう。', 'tech, raspberry-pi, network'],
+      ['2026-02-22', '260222-f0ac30af', 'ブログをアップデートしました', 'ブログ機能で色々調べたので覚書。', 'tech, seo, astro, opengraph'],
+      ['2026-02-17', '260217-b39b4fa2', 'Nvimカスタマイズ日記#1', 'Nvim に再入門し、プラグインを一つずつ入れて愛着を持とうとする日記。', 'tech, neovim, lua'],
+      ['2026-02-08', '260208-478156ab', 'Nvimに再挑戦しようとしている', '何度も敗北している Neovim を、今度こそ使いこなすと息巻いている。', 'tech, neovim'],
+      ['2026-02-06', '260206', '初めてのAstroブログ記事', 'おためし。', 'tech, astro'],
+    ].map(([date, slug, title, desc, tags]) => ({ date, title, desc, tags, url: '/posts/' + slug + '/', hash: slug.includes('-') ? slug.split('-')[1] : '(root)' }));
+    const months = [];
+    posts.forEach((p) => {
+      const label = p.date.slice(0, 7);
+      const last = months[months.length - 1];
+      if (last && last.label === label) last.posts.push(p); else months.push({ label, posts: [p] });
+    });
+    return { t, isDark: dark, isLight: !dark, months };
+  }
+}
+</script>
+</body>
+</html>

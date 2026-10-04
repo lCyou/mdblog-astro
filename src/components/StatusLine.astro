@@ -1,0 +1,113 @@
+---
+interface Props {
+  /** 現在のファイルのパス（例: ~/blog/index.md） */
+  path: string;
+  /** ブランチ表示（例: main, main@cd9f2539） */
+  branch?: string;
+  /** 右側に出す補足（例: 11 posts, markdown） */
+  info?: string[];
+}
+
+const { path, branch = 'main', info = [] } = Astro.props;
+---
+
+<div class="statusline" aria-hidden="true">
+  <span class="mode">NORMAL</span>
+  <span class="file"><span class="branch">{branch}</span><span>{path}</span></span>
+  <span class="grow"></span>
+  {info.map((text) => <span class="info">{text}</span>)}
+  <span class="info">utf-8 | ja</span>
+  <span class="pos" data-statusline-pos>Top</span>
+  <span class="clock" data-statusline-clock>--:--</span>
+</div>
+
+<script is:inline>
+  (() => {
+    const pos = document.querySelector('[data-statusline-pos]');
+    const clock = document.querySelector('[data-statusline-clock]');
+    if (!pos || !clock) return;
+
+    const updatePos = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const y = window.scrollY;
+      pos.textContent = max <= 0 ? 'All' : y <= 0 ? 'Top' : y >= max - 1 ? 'Bot' : `${Math.round((y / max) * 100)}%`;
+    };
+    const updateClock = () => {
+      const now = new Date();
+      clock.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    };
+
+    updatePos();
+    updateClock();
+    window.addEventListener('scroll', updatePos, { passive: true });
+    window.addEventListener('resize', updatePos);
+    setInterval(updateClock, 15000);
+  })();
+</script>
+
+<style>
+  .statusline {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    height: var(--statusline-h);
+    display: flex;
+    align-items: stretch;
+    background: var(--bar);
+    color: var(--bar-text);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .statusline > span {
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+  }
+
+  .mode,
+  .clock {
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+  }
+
+  .file {
+    gap: 8px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .branch,
+  .info {
+    opacity: 0.75;
+  }
+
+  .grow {
+    flex-grow: 1;
+    padding: 0 !important;
+  }
+
+  .pos {
+    background: var(--inv);
+    color: var(--inv-text);
+    min-width: 56px;
+    justify-content: center;
+  }
+
+  :global(body) {
+    padding-bottom: var(--statusline-h);
+  }
+
+  @media (max-width: 767px) {
+    .statusline {
+      display: none;
+    }
+
+    :global(body) {
+      padding-bottom: 0;
+    }
+  }
+</style>
